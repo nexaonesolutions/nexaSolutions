@@ -1,0 +1,254 @@
+{
+  "nav": {
+    "home": "Home",
+    "plans": "Plans",
+    "maintenance": "Maintenance",
+    "portfolio": "Portfolio",
+    "about": "About Us"
+  },
+  "hero": {
+    "tag": "Technology and Design",
+    "title1": "Create Modern",
+    "title2": "and High-Converting",
+    "title3": "Landing Pages with Nexa",
+    "subtitle": "The complete platform for you to launch your online presence, attract more customers, and grow your business.",
+    "cta_primary": "Get Started Now",
+    "cta_secondary": "View Plans",
+    "stats": {
+      "projects": "Projects Launched",
+      "clients": "Satisfied Clients",
+      "conversion": "Increase in Conversion",
+      "support": "Specialized Support"
+    }
+  },
+  "testimonials": {
+    "title": "What our clients say"
+  },
+  "cta": {
+    "title": "Ready to",
+    "highlight": "transform",
+    "desc": "your online presence? Talk to one of our specialists and discover how we can help your business grow.",
+    "btn_primary": "Talk to a specialist",
+    "btn_secondary": "See Our Projects"
+  },
+  "footer": {
+    "desc": "Digital solutions to boost your business.",
+    "company": "Company",
+    "links": {
+      "about": "About Us",
+      "careers": "Careers",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "services": "Services",
+    "social": "Social Media",
+    "rights": "All rights reserved."
+  },
+  "pricing": {
+    "title": "Find Your Perfect Fit",
+    "subtitle": "Transparent pricing for every stage of your business. No hidden fees.",
+    "per_unique": "/ one-time payment",
+    "about_btn": "See plan details",
+    "popular": "Most Popular",
+    "premium": "Best Value",
+    "modal_title": "Plan Comparison",
+    "close": "Close",
+    "plan_basic": {
+      "name": "Basic",
+      "price": "150",
+      "currency": "€",
+      "description": "Best for a quick launch.",
+      "button_text": "Get Started with Basic"
+    },
+    "plan_pro": {
+      "name": "Pro",
+      "price": "250",
+      "currency": "€",
+      "description": "For growing businesses ready to capture more leads with advanced features.",
+      "button_text": "Ignite Your Growth"
+    },
+    "plan_enterprise": {
+      "name": "Enterprise",
+      "price": "400",
+      "currency": "€",
+      "description": "The ultimate package with premium features for maximum impact and scalability.",
+      "button_text": "Go Enterprise"
+    }
+  },
+  "comparison": {
+    "categories": {
+      "design": "Design & UX",
+      "tech": "Technology & Performance",
+      "marketing": "Marketing & SEO",
+      "support": "Support & Delivery"
+    }
+  },
+  "features_list": {
+    "design_custom": "Custom Design",
+    "responsive": "Responsive (Desktop, Tablet, Mobile)",
+    "micro_animations": "Micro-animations",
+    "id_premium": "Premium Visual Identity",
+    "dark_mode": "Dark Mode",
+    "hosting": "1 Year Free Hosting",
+    "ssl": "SSL Security Certificate",
+    "speed_opt": "Speed Optimization",
+    "whatsapp": "WhatsApp Integration",
+    "crm_api": "CRM & API Integration",
+    "contact_form": "Contact Form",
+    "copywriting": "Copywriting (AI-assisted)",
+    "pixel": "Meta/Google Pixel Installation",
+    "analytics": "Google Analytics Configuration",
+    "ab_testing": "A/B Testing",
+    "delivery": "Delivery Time",
+    "revisions": "Number of Revisions",
+    "training": "Usage Training",
+    "priority": "Priority Support",
+    "values": {
+      "basic": "Basic",
+      "advanced": "Advanced",
+      "extreme": "Extreme",
+      "total": "Total",
+      "days3": "3 Business Days",
+      "days5": "5 Business Days",
+      "days10": "10 Business Days",
+      "rev1": "1 Revision",
+      "rev2": "2 Revisions",
+      "rev_unl": "Unlimited Revisions"
+    }
+  },
+  "maintenance": {
+    "title": "Website Maintenance",
+    "subtitle": "Keep your site secure, updated, and performing at its best.",
+    "why_title": "Why invest in",
+    "why_desc": "A website is a living digital asset that needs constant care. Our maintenance plans ensure your site remains fast, secure, and reliable, protecting your investment and reputation. We handle the technical details so you can focus on your business.",
+    "monthly_plans": "Monthly Plans",
+    "recommended": "Recommended",
+    "per_month": "/month",
+    "plans": [
+      {
+        "name": "Essential",
+        "price": "50",
+        "currency": "€",
+        "desc": "Ideal for small sites and blogs that need regular check-ups.",
+        "features": [
+          "Weekly Backups",
+          "Security Monitoring",
+          "Plugin & Theme Updates",
+          "Uptime Monitoring"
+        ],
+        "btn": "Choose Essential"
+      },
+      {
+        "name": "Professional",
+        "price": "100",
+        "currency": "€",
+        "desc": "Perfect for business websites and e-commerce stores.",
+        "features": [
+          "All Essential features",
+          "Daily Backups",
+          "Performance Optimization",
+          "Priority Support"
+        ],
+        "btn": "Choose Professional"
+      },
+      {
+        "name": "Premium",
+        "price": "150",
+        "currency": "€",
+        "desc": "Complete peace of mind for mission-critical websites.",
+        "features": [
+          "All Professional features",
+          "Real-time Backups",
+          "Advanced Security Firewall",
+          "24/7 Emergency Support"
+        ],
+        "btn": "Choose Premium"
+      }
+    ]
+  },
+  "portfolio": {
+    "title": "Our Portfolio",
+    "subtitle": "Check out some of the amazing projects we've delivered."
+  },
+  "auth": {
+    "loginTitle": "Access your account",
+    "registerTitle": "Create your account",
+    "or": "or",
+    "loginNow": "log in now",
+    "registerNow": "register now",
+    "name": "Full Name",
+    "cpf": "National ID (CPF)",
+    "phone": "Phone",
+    "emailAddress": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm your password",
+    "signIn": "Sign In",
+    "register": "Register",
+    "registrationSuccess": "Registration successful! Redirecting to login...",
+    "registrationFailed": "Registration failed. Please check your details.",
+    "passwordsMismatch": "Passwords do not match.",
+    "loginFailed": "Invalid email or password.",
+    "networkError": "A network error occurred. Please try again.",
+    "profileTitle": "My Profile",
+    "personalInfo": "Personal Information",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "changePasswordBtn": "Change Password",
+    "forgot_password_title": "Forgot Your Password?",
+    "forgot_password_desc": "Enter your email and we'll send you a link to reset your password.",
+    "forgot_password_success": "If an account with that email exists, a password reset link has been sent.",
+    "forgot_password_submit": "Send Link",
+    "back_to_login": "Back to Login",
+    "reset_password_title": "Reset Password",
+    "reset_password_desc": "Create a new password for your account.",
+    "reset_password_success": "Your password has been successfully reset! You can now log in.",
+    "password_mismatch": "Passwords do not match.",
+    "invalid_token": "Invalid or expired token.",
+    "invalid_token_title": "Invalid Link",
+    "invalid_token_desc": "This password reset link is invalid or has already been used.",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "reset_password_submit": "Reset Password",
+    "login": "Log In"
+  },
+  "features": {
+    "title": "Incredible Features",
+    "subtitle": "Everything you need to build a modern and high-performing website, without complications.",
+    "list": [
+      {
+        "icon": "Rocket",
+        "title": "Fast Launch",
+        "description": "Publish your site in minutes. Our optimized infrastructure ensures the best performance from the start."
+      },
+      {
+        "icon": "ShieldCheck",
+        "title": "Top-Notch Security",
+        "description": "Robust protection against threats with automatic updates and 24/7 monitoring."
+      },
+      {
+        "icon": "LayoutTemplate",
+        "title": "Customizable Templates",
+        "description": "Choose from dozens of professional templates and customize everything to reflect your brand."
+      },
+      {
+        "icon": "Code",
+        "title": "Agile Development",
+        "description": "Complete development environment to create and test new features with ease."
+      },
+      {
+        "icon": "TrendingUp",
+        "title": "SEO Optimized",
+        "description": "Integrated tools to optimize your site for search engines and attract more visitors."
+      },
+      {
+        "icon": "PenTool",
+        "title": "Intuitive Design",
+        "description": "Create amazing layouts with our drag-and-drop visual editor, no code required."
+      }
+    ]
+  },
+  "loading": "Loading..."
+}

@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles and small responsive helpers */
+:root{
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,body,#root{height:100%;}
+
+body{
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-text-size-adjust:100%;
+}
+
+/* Make images and videos scale nicely */
+img, video { max-width:100%; height:auto; display:block; }
+
+/* Safe area helper for mobile (iPhone notch) */
+.pb-safe-area { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem); }
+
+/* Improve tappable targets on mobile */
+button, a[href], input, textarea, select {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Estilos de Formulário Customizados */
+@layer components {
+  .form-label {
+    @apply block text-sm font-medium text-gray-300 mb-2;
+  }
+  .form-input {
+    @apply w-full bg-nexa-dark/70 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary outline-none transition-all duration-300;
+    padding: 0.875rem 1rem;
+  }
+  .form-input-icon {
+    @apply pl-11;
+  }
+  .form-btn-primary {
+    @apply w-full bg-gradient-to-r from-nexa-primary to-nexa-secondary text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity shrink-0 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
+
+/* Subtle responsive typographic helpers (don't override Tailwind utilities) */
+h1 {
+  font-weight: 800;
+  line-height: 1.03;
+  font-size: clamp(1.75rem, 3.8vw + 0.6rem, 3.75rem);
+}
+
+/* Small screens adjustments for containers */
+.max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* Helper to visually constrain very large backdrops on small screens */
+@media (max-width: 420px) {
+  .blur-[128px] { filter: blur(72px); }
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}

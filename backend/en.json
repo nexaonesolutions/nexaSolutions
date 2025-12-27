@@ -13,7 +13,7 @@
     "title3": "Landing Pages with Nexa",
     "subtitle": "The complete platform for you to launch your online presence, attract more customers, and grow your business.",
     "cta_primary": "Get Started Now",
-    "cta_secondary": "View Plans",
+    "cta_secondary": "View Portfolio",
     "stats": {
       "projects": "Projects Launched",
       "clients": "Satisfied Clients",
@@ -44,6 +44,7 @@
     "social": "Social Media",
     "rights": "All rights reserved."
   },
+  
   "pricing": {
     "title": "Find Your Perfect Fit",
     "subtitle": "Transparent pricing for every stage of your business. No hidden fees.",

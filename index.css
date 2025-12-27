@@ -21,6 +21,17 @@ body{
   -webkit-text-size-adjust:100%;
 }
 
+/* Base theme styles */
+html.light {
+  background-color: #f7fafc; /* Light background */
+  color: #2d3748; /* Dark text */
+}
+
+html.dark {
+  background-color: #1a202c; /* Dark background */
+  color: #e2e8f0; /* Light text */
+}
+
 /* Make images and videos scale nicely */
 img, video { max-width:100%; height:auto; display:block; }
 
@@ -66,7 +77,7 @@ h1 {
 
 /* Helper to visually constrain very large backdrops on small screens */
 @media (max-width: 420px) {
-  .blur-[128px] { filter: blur(72px); }
+  .blur-[12px] { filter: blur(72px); }
 }
 .transform-style-3d {
   transform-style: preserve-3d;

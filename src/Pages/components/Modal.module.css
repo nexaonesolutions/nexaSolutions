@@ -1,0 +1,82 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal {
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  position: relative;
+  transform: translateY(0);
+  transition: transform 0.3s ease-out;
+  
+  /* Dark theme (default) */
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333;
+}
+
+:global(.light) .modal {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #e0e0e0;
+}
+
+.header {
+  padding: 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid #333;
+}
+
+:global(.light) .header {
+  border-bottom: 1px solid #eee;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  color: #aaa;
+}
+
+:global(.light) .closeButton {
+  color: #666;
+}
+
+.content {
+  padding: 25px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  line-height: 1.6;
+}

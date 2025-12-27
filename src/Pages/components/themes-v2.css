@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Tema Padrão (Nexa) */
+  html.theme-nexa {
+    --color-primary: 34 211 238; /* Tailwind cyan-500 */
+    --color-secondary: 168 85 247; /* Tailwind purple-500 */
+    --color-background: 8 12 18; /* #080c12 */
+    --color-card: 17 24 39; /* Tailwind gray-900 */
+    --color-text-base: 229 231 235; /* Tailwind gray-200 */
+    --color-text-muted: 156 163 175; /* Tailwind gray-400 */
+  }
+
+  /* Tema Alternativo (Cyber) */
+  html.theme-cyber {
+    --color-primary: 219 39 119; /* Tailwind pink-600 */
+    --color-secondary: 20 184 166; /* Tailwind teal-500 */
+    --color-background: 26 17 46; /* #1a112e */
+    --color-card: 40 29 66; /* #281d42 */
+    --color-text-base: 243 244 246; /* Tailwind gray-100 */
+    --color-text-muted: 163 163 163; /* #a3a3a3 */
+  }
+
+  /* Tema Amanhecer (Café com Leite v2) */
+  html.theme-amanhecer {
+    --color-primary: 253 186 116;    /* Tailwind orange-300 */
+    --color-secondary: 253 230 138;  /* Tailwind amber-200 */
+    --color-background: 250 250 250;  /* Tailwind neutral-50 */
+    --color-card: 229 229 229;        /* Tailwind neutral-200 */
+    --color-text-base: 41 37 36;      /* Tailwind stone-800 */
+    --color-text-muted: 87 83 78;     /* Tailwind stone-600 */
+  }
+}

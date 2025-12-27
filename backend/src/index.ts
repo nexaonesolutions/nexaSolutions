@@ -6,6 +6,7 @@ import cors from 'cors';
 import paymentRoutes from './routes/payment.routes';
 import authRoutes from './routes/auth.routes';
 import ordersRoutes from './routes/orders.routes';
+import userRoutes from './routes/user.routes';
 
 const app = express();
 // Default to the frontend's expected port so they connect without extra env setup
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/payments', paymentRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', ordersRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check route
 app.get('/', (req: Request, res: Response) => {

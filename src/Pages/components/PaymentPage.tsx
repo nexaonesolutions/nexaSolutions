@@ -3,12 +3,14 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, ChevronLeft, CreditCard, QrCode, ChevronDown } from 'lucide-react';
 import StripePaymentForm from './StripePaymentForm';
 import StripePixPayment from './StripePixPayment';
+import { useAuth } from '../contexts/AuthContext';
 
 type PaymentMethod = 'card' | 'pix';
 
 const PaymentPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { mainPlan, maintenancePlan } = location.state || { mainPlan: null, maintenancePlan: null };
   const [activeTab, setActiveTab] = useState<PaymentMethod>('card');
   const [isSummaryOpen, setIsSummaryOpen] = useState(true);
@@ -17,14 +19,34 @@ const PaymentPage: React.FC = () => {
   const currency = mainPlan?.currency || maintenancePlan?.currency || 'BRL';
   const currencySymbol = currency === 'BRL' ? 'R$' : currency;
 
+  // Proteção contra atualização de página (perda de state) e usuário não logado
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    } else if (!mainPlan) {
+      // Se não houver plano selecionado (ex: refresh da página), volta para planos
+      navigate('/planos');
+    }
+  }, [user, mainPlan, navigate]);
+
+  if (!user || !mainPlan) {
+    return (
+      <div className="bg-nexa-dark min-h-screen flex items-center justify-center">
+        <div className="text-white text-xl font-bold animate-pulse">
+          Carregando informações do pedido...
+        </div>
+      </div>
+    );
+  }
+
   const renderPaymentMethod = () => {
     switch (activeTab) {
       case 'card':
-        return <StripePaymentForm amount={total} currency={currency} />;
+        return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} />;
       case 'pix':
-        return <StripePixPayment amount={total} currency={currency} />;
+        return <StripePixPayment amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} />;
       default:
-        return <StripePaymentForm amount={total} currency={currency} />;
+        return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} />;
     }
   }
 

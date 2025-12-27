@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadUser = useCallback(async () => {
       if (!token) return;
       try {
-        const userData = await apiCall('/api/users/me', {
+        const { user: userData } = await apiCall('/api/auth/profile', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         setUser(userData);
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
     const updateProfile = useCallback(async (data: { name: string; email: string; phone: string; cpf: string; }) => {
       try {
-        const updatedUser = await apiCall('/api/users/profile', {
+        const { user: updatedUser } = await apiCall('/api/auth/profile', {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` },
           body: JSON.stringify(data),
@@ -147,8 +147,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
     const changePassword = useCallback(async (oldPassword: string, newPassword: string) => {
       try {
-        await apiCall('/api/users/change-password', {
-          method: 'POST',
+        await apiCall('/api/auth/change-password', {
+          method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ oldPassword, newPassword }),
         });
@@ -203,12 +203,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
-    return await apiCall('/api/auth/register', {
+    const data = await apiCall('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password, cpf, phone }),
     });
-    // Opcional: Fazer login automaticamente após o registro
-    // await login(email, password);
+    
+    // Auto-login after registration
+    await login(email, password);
+    return data;
   };
 
   const logout = () => {

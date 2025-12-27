@@ -8,6 +8,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Added loading state
   const { login, pendingOrder, setPendingOrder } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,6 +17,15 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError(t('auth.invalidEmailFormat')); // Assuming you'll add this translation key
+      return;
+    }
+
+    setIsLoading(true); // Set loading to true on submission
     try {
       const user = await login(email, password, rememberMe);
       if (user && user.role === 'admin') {
@@ -35,6 +45,8 @@ const Login: React.FC = () => {
       }
     } catch (err) {
         setError(t('auth.loginFailed'));
+    } finally {
+        setIsLoading(false); // Set loading to false after submission (success or failure)
     }
   };
 
@@ -112,24 +124,42 @@ const Login: React.FC = () => {
             </div>
 
             <div className="text-sm">
-              <Link to="/esqueci-minha-senha"  className="font-medium text-nexa-primary hover:text-nexa-secondary transition-colors">
+              <Link to="/esqueci-senha"  className="font-medium text-nexa-primary hover:text-nexa-secondary transition-colors">
                 {t('auth.forgot_password')}
               </Link>
             </div>
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center mt-4">
-              {error}
+            <div className="relative bg-red-800 bg-opacity-30 border border-red-700 text-red-300 px-4 py-3 rounded-md mb-4 flex items-center justify-between">
+              <span className="block sm:inline">{error}</span>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-300 hover:text-red-100 focus:outline-none"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </button>
             </div>
           )}
 
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexa-primary transition duration-300 shadow-lg shadow-nexa-primary/30 hover:shadow-nexa-secondary/40"
+              disabled={isLoading} // Disable button when loading
+              className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexa-primary transition duration-300 shadow-lg shadow-nexa-primary/30 hover:shadow-nexa-secondary/40 disabled:opacity-50 disabled:cursor-not-allowed" // Added disabled styles
             >
-              {t('auth.signIn')}
+              {isLoading ? 'Loading...' : t('auth.signIn')} {/* Show loading text */}
             </button>
           </div>
         </form>

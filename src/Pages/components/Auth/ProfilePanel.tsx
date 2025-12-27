@@ -60,10 +60,6 @@ const ProfilePanel: React.FC = () => {
       const success = await updateProfile({ name, email, phone, cpf });
       if (success) {
         setProfileMessage(t('auth.profileUpdateSuccess'));
-        // re-load user data
-        if (loadUser) await loadUser();
-      } else {
-        setProfileError(authError || t('auth.profileUpdateFailed'));
       }
     } catch (err) {
       setProfileError((err as any)?.message || t('auth.networkError'));
@@ -102,7 +98,7 @@ const ProfilePanel: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-nexa-dark flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-nexa-dark flex flex-col items-center justify-center py-24 px-4 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-nexa-secondary/20 rounded-full blur-[128px] animate-pulse-slow"></div>
@@ -111,30 +107,30 @@ const ProfilePanel: React.FC = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
       </div>
 
-      <div className="max-w-4xl w-full space-y-8 p-6 sm:p-10 bg-gray-800 rounded-2xl shadow-xl border border-gray-700 glass-effect relative z-10 animate-fade-in-up">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-sans">
+      <div className="max-w-4xl w-full space-y-8 p-4 sm:p-8 bg-gray-800 rounded-2xl shadow-xl border border-gray-700 glass-effect relative z-10 animate-fade-in-up">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-sans">
             {t('auth.profileTitle')}
           </h2>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-3 cursor-pointer">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <label className="flex items-center gap-2 cursor-pointer">
               <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+              <div className="w-12 h-12 rounded-full bg-gray-700 flex-shrink-0 flex items-center justify-center text-white font-bold text-xl overflow-hidden">
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="avatar" className="w-full h-full object-cover" />
                 ) : (
                   (user?.name || 'U').split(' ').map(s=>s[0]).slice(0,2).join('')
                 )}
               </div>
-              <span className="text-sm text-gray-300">{t('auth.changeAvatar') || 'Alterar avatar'}</span> {/* Removed hidden sm:inline */}
+              <span className="text-sm text-gray-300 hidden sm:inline">{t('auth.changeAvatar') || 'Alterar avatar'}</span>
             </label>
-            <button onClick={() => navigate('/perfil')} className="px-3 py-2 text-sm bg-white/5 text-white rounded-md hover:bg-white/10">{t('profile.back') || 'Voltar'}</button>
+            <button onClick={() => navigate('/perfil')} className="px-4 py-2 text-sm bg-white/5 text-white rounded-md hover:bg-white/10 ml-auto">{t('profile.back') || 'Voltar'}</button>
           </div>
         </div>
 
         {/* Profile Update Form */}
         <form className="space-y-6" onSubmit={handleProfileUpdate}>
-          <h3 className="text-xl font-bold text-white border-b border-gray-700 pb-3 mb-4">
+          <h3 className="text-lg sm:text-xl font-bold text-white border-b border-gray-700 pb-3 mb-4">
             {t('auth.personalInfo')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -147,9 +143,9 @@ const ProfilePanel: React.FC = () => {
                 name="name"
                 type="text"
                 autoComplete="name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm disabled:opacity-50"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                disabled
               />
             </div>
             <div>
@@ -188,18 +184,18 @@ const ProfilePanel: React.FC = () => {
                 id="cpf"
                 name="cpf"
                 type="text"
-                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm disabled:opacity-50"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                disabled
               />
             </div>
           </div>
 
           {profileError && (
-            <div className="text-red-500 text-sm text-center mt-4">{profileError}</div>
+            <div className="text-red-500 text-sm text-center mt-2">{profileError}</div>
           )}
           {profileMessage && (
-            <div className="text-green-500 text-sm text-center mt-4">{profileMessage}</div>
+            <div className="text-green-500 text-sm text-center mt-2">{profileMessage}</div>
           )}
 
           <div>
@@ -213,8 +209,8 @@ const ProfilePanel: React.FC = () => {
         </form>
 
         {/* Change Password Form */}
-        <form className="space-y-6 mt-10" onSubmit={handleChangePassword}>
-          <h3 className="text-xl font-bold text-white border-b border-gray-700 pb-3 mb-4">
+        <form className="space-y-6 mt-8" onSubmit={handleChangePassword}>
+          <h3 className="text-lg sm:text-xl font-bold text-white border-b border-gray-700 pb-3 mb-4">
             {t('auth.changePassword')}
           </h3>
           <div>
@@ -264,10 +260,10 @@ const ProfilePanel: React.FC = () => {
           </div>
 
           {passwordError && (
-            <div className="text-red-500 text-sm text-center mt-4">{passwordError}</div>
+            <div className="text-red-500 text-sm text-center mt-2">{passwordError}</div>
           )}
           {passwordMessage && (
-            <div className="text-green-500 text-sm text-center mt-4">{passwordMessage}</div>
+            <div className="text-green-500 text-sm text-center mt-2">{passwordMessage}</div>
           )}
 
           <div>
@@ -281,7 +277,7 @@ const ProfilePanel: React.FC = () => {
         </form>
 
         {/* Logout Button */}
-        <div className="mt-10 pt-6 border-t border-gray-700">
+        <div className="mt-8 pt-6 border-t border-gray-700">
           <button
             onClick={handleLogout}
             className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300 shadow-lg shadow-red-500/30 hover:shadow-red-600/40"

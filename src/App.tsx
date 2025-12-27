@@ -7,7 +7,7 @@ import { AboutUs } from '@/src/Pages/components/AboutUs';
 import ProtectedRoute from '@/src/Pages/components/ProtectedRoute';
 import { LanguageProvider } from '@/src/Pages/contexts/LanguageContext';
 import { AuthProvider } from '@/src/Pages/contexts/AuthContext';
-import { ThemeProvider } from '@/src/Pages/contexts/ThemeContext';
+import { ThemeProvider } from '@/src/Pages/components/ThemeContext';
 import HomePage from '@/src/Pages/contexts/HomePage';
 import PlansPage from '@/src/Pages/contexts/PlansPage';
 import MaintenancePage from '@/src/Pages/contexts/MaintenancePage';
@@ -54,10 +54,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-      <div className="bg-nexa-dark min-h-screen text-white selection:bg-nexa-primary selection:text-black font-sans">
+      <div className="bg-nexa-dark min-h-screen text-white selection:bg-nexa-primary selection:text-black font-sans flex flex-col">
         <ScrollToTop />
         {!isPaymentPage && <Navbar onAboutUsClick={() => setIsAboutUsOpen(true)} />}
-        <main>
+        <main className="flex-grow pb-16">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/planos" element={<PlansPage />} />

@@ -1,23 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Copy } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const VITE_STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+
+const stripePromise = VITE_STRIPE_PUBLIC_KEY ? loadStripe(VITE_STRIPE_PUBLIC_KEY) : null;
 
 interface StripePixPaymentProps {
   amount: number;
   currency: string;
+  mainPlan?: any;
+  maintenancePlan?: any;
 }
 
-const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency }) => {
+const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, mainPlan, maintenancePlan }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [copyPasteCode, setCopyPasteCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
+    let ignore = false;
     const fetchPaymentIntent = async () => {
       try {
+        if (!stripePromise) {
+            throw new Error("Chave pública do Stripe não configurada (VITE_STRIPE_PUBLIC_KEY).");
+        }
+
         let endpointCurrency = currency.toLowerCase();
         if (currency === '€') {
           endpointCurrency = 'eur';
@@ -25,19 +37,41 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency })
           endpointCurrency = 'brl';
         }
 
-        // TEMOS QUE CONFIGURAR PARA PRODUCAO A CONTA DA STRIPE
-        const response = await fetch('/api/payments/create-stripe-payment-intent', {
+        const token = localStorage.getItem('token');
+
+        const payload = {
+          amount: amount,
+          currency: endpointCurrency,
+          payment_method_types: ['pix'],
+          orderId: `order_pix_${Date.now()}`,
+          mainPlan,
+          maintenancePlan,
+          userId: user?.id,
+          email: user?.email,
+          metadata: {
+            userId: user?.id,
+            email: user?.email,
+            mainPlanName: mainPlan?.name,
+            maintenancePlanName: maintenancePlan?.name
+          }
+        };
+        console.log('DEBUG: Enviando dados para criar PaymentIntent (PIX):', payload);
+
+        const response = await fetch(`${API_URL}/api/payments/create-stripe-payment-intent`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: amount,
-            currency: endpointCurrency,
-            payment_method_types: ['pix'],
-            orderId: `order_pix_${Date.now()}`,
-          }),
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: JSON.stringify(payload),
         });
 
+        if (ignore) return;
+
         if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            }
             const errorData = await response.json();
             throw new Error(errorData.error || 'Failed to create payment intent.');
         }
@@ -50,12 +84,13 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency })
 
         const stripe = await stripePromise;
         if (!stripe) {
-            throw new Error("Stripe.js has not loaded yet.");
+            throw new Error("Falha ao carregar o Stripe.js.");
         }
 
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
         
         if (paymentIntent && paymentIntent.next_action?.pix_display_qr_code) {
+          if (ignore) return;
           setQrCodeUrl(paymentIntent.next_action.pix_display_qr_code.image_url_png);
           setCopyPasteCode(paymentIntent.next_action.pix_display_qr_code.copyable_code);
         } else {
@@ -63,13 +98,19 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency })
         }
 
       } catch (error: any) {
+        if (ignore) return;
         setError("Não foi possível gerar o código PIX. Por favor, verifique se esta opção de pagamento está habilitada em sua conta Stripe.");
       } finally {
+        if (!ignore) {
         setLoading(false);
+        }
       }
     };
 
     fetchPaymentIntent();
+    return () => {
+      ignore = true;
+    };
   }, [amount, currency]);
 
   const handleCopy = () => {

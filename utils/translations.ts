@@ -44,7 +44,7 @@ export const translations = {
       'subtitle': 'Crie landing pages de alta conversão que transformam visitantes em clientes. Rápido, fácil e eficiente.',
       'tag': 'Resultados Incríveis',
       'cta_primary': 'Criar Minha Landing Page',
-      'cta_secondary': 'Ver Planos',
+      'cta_secondary': 'PortFolio',
       'stats': {
         'projects': 'Projetos Concluídos',
         'clients': 'Satisfação do Cliente',
@@ -225,6 +225,7 @@ export const translations = {
       'changePasswordBtn': 'Salvar Senha',
       'invalidPhone': 'Telefone inválido.',
       'invalidCpf': 'CPF inválido.',
+      'invalidEmailFormat': 'Formato de e-mail inválido.',
       'profileUpdateSuccess': 'Perfil atualizado com sucesso!',
       'password_strength': { 'min_length': 'Pelo menos 8 caracteres', 'has_upper': 'Uma letra maiúscula', 'has_lower': 'Uma letra minúscula', 'has_number': 'Um número', 'has_special': 'Um caractere especial' },
       'reset_password_title': 'Redefinir Senha',
@@ -356,7 +357,7 @@ export const translations = {
       'subtitle': 'Create high-converting landing pages that turn visitors into customers. Fast, easy, and efficient.',
       'cta_primary': 'Create My Landing Page',
       'tag': 'Amazing Results',
-      'cta_secondary': 'View Plans',
+      'cta_secondary': 'View ',
       'stats': {
         'projects': 'Projects Completed',
         'clients': 'Customer Satisfaction',
@@ -536,6 +537,7 @@ export const translations = {
       'changePasswordBtn': 'Save Password',
       'invalidPhone': 'Invalid phone number.',
       'invalidTaxId': 'Invalid Tax ID.',
+      'invalidEmailFormat': 'Invalid email format.',
       'profileUpdateSuccess': 'Profile updated successfully!',
       'password_strength': {
         'min_length': 'At least 8 characters',
@@ -696,7 +698,7 @@ export const translations = {
       'subtitle': 'Crie landing pages de alta conversão que transformam visitantes em clientes. Rápido, fácil e eficiente.',
       'tag': 'Resultados Incríveis',
       'cta_primary': 'Criar Minha Landing Page',
-      'cta_secondary': 'Ver Planos',
+      'cta_secondary': 'Ver Portfolio',
       'stats': {
         'projects': 'Projetos Concluídos',
         'clients': 'Satisfação do Cliente',
@@ -876,6 +878,7 @@ export const translations = {
       'changePasswordBtn': 'Guardar Palavra-passe',
       'invalidPhone': 'Telefone inválido.',
       'invalidNif': 'NIF inválido.',
+      'invalidEmailFormat': 'Formato de e-mail inválido.',
       'profileUpdateSuccess': 'Perfil atualizado com sucesso!',
       'password_strength': {
         'min_length': 'Pelo menos 8 caracteres',

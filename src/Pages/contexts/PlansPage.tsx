@@ -16,7 +16,6 @@ const PlansPage = () => {
         </div>
       </div>
       <Pricing />
-      <CTA />
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { authenticate } from './auth.controller';
-import fs from 'fs';
-import path from 'path';
+import { readDb, writeDb } from '../services/db.service';
 
 interface Order {
   id: string;
@@ -12,33 +11,18 @@ interface Order {
   maintenancePlanName?: string;
 }
 
-const dbPath = path.resolve(__dirname, '../../db.json');
-
-const readDb = (): { orders: Order[] } => {
-  try {
-    const data = fs.readFileSync(dbPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    return { orders: [] };
-  }
-};
-
-const writeDb = (data: { orders: Order[] }) => {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-};
-
 // Helper to generate IDs
 const generateId = () => 'ord_' + Date.now();
 
-export const getUserOrders = [authenticate, (req: Request, res: Response) => {
+export const getUserOrders = [authenticate, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   console.log(`Recebido pedido para /api/orders do utilizador:`, req.user); // Added log
-  const db = readDb();
-  const userOrders = db.orders.filter(o => o.userId === userId);
+  const db = await readDb();
+  const userOrders = db.orders.filter((o: Order) => o.userId === userId);
   res.status(200).json(userOrders);
 }];
 
-export const createOrder = [authenticate, (req: Request, res: Response) => {
+export const createOrder = [authenticate, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const { total, mainPlanName, maintenancePlanName } = req.body;
 
@@ -46,7 +30,7 @@ export const createOrder = [authenticate, (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Missing order details' });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const newOrder: Order = {
     id: generateId(),
     userId,
@@ -57,6 +41,6 @@ export const createOrder = [authenticate, (req: Request, res: Response) => {
   };
 
   db.orders.push(newOrder);
-  writeDb(db);
+  await writeDb(db);
   res.status(201).json({ message: 'Order created', order: newOrder });
 }];

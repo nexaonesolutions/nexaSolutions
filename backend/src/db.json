@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "kauamedeirosmh@gmail.com",
+      "password": "16ce7085ea72bcf3fc3cd6457b972b79:a7041ddd238ed7eb8352e3221c12b960a79f3eff54f29b32733609d1f85aa2a94012dc28c89c8bc8dcc7e46688a8695a42abf322e402a030e67af8db1f954ee2",
+      "name": "kaua medeiros honorato",
+      "cpf": "10108398102",
+      "phone": "44991142050"
+    },
+    {
+      "id": 2,
+      "email": "kauamedeirospikaxu@gmail.com",
+      "password": "ca09dcad3eda458ee4542a7daa3c34d5:88649e1ca0d9c8ac4654f45b64cb32c7f24dc7433ef4c787db8bf51b880a5efa30dbc3145facf0e8a5e78a51b12826284973b937786c24ee6ce25b83c9beda95",
+      "name": "SOFIA MAGALHAES SIMOES",
+      "cpf": "25898454055",
+      "phone": "44991142050"
+    }
+  ],
+  "orders": []
+}

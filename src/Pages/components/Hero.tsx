@@ -1,86 +1,88 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-
-interface Ripple {
-  x: number;
-  y: number;
-  size: number;
-  id: number;
-}
+import { motion } from 'framer-motion';
+import AnimatedStat from './AnimatedStat';
+import { useRipple } from '../../hooks/useRipple';
+import { useParallax } from '../../hooks/useParallax';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
+import { HeroBackground } from './HeroBackground';
+import { HeroMockup } from './HeroMockup';
 
 export const Hero: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const { ripples, createRipple } = useRipple();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const { rotateX, rotateY } = useParallax(containerRef, { offsetX: [-5, 5], offsetY: [5, -5] });
 
   const handlePlanClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const newRipple = { x, y, size, id: Date.now() };
-    
-    setRipples((prev) => [...prev, newRipple]);
-
-    // Cleanup ripple after animation
-    setTimeout(() => {
-      setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
-    }, 600);
+    createRipple(e);
 
     // Delay navigation slightly to visualize the effect
     setTimeout(() => {
       navigate('/planos');
     }, 300);
   };
+  
+  const initial = prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 };
+  const transition = (delay: number) => prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <section 
+      ref={containerRef}
+      className="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden"
+    >
       {/* Background Elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-nexa-secondary/20 rounded-full blur-[128px] animate-pulse-slow"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-nexa-primary/20 rounded-full blur-[128px] animate-pulse-slow delay-1000"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-        
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-      </div>
+      <HeroBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Animated Tag Wrapper */}
-        <div className="flex justify-center opacity-0 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect border-nexa-primary/30 text-nexa-primary text-sm font-medium mb-8 animate-float">
+        <motion.div 
+          initial={initial}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transition(0)}
+          className="flex justify-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-nexa-primary/30 text-nexa-primary text-sm font-medium mb-8">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nexa-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-nexa-primary"></span>
             </span>
             {t('hero.tag')}
           </div>
-        </div>
+        </motion.div>
         
-        <h1 
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-tight opacity-0 animate-fade-in-up"
-          style={{ animationDelay: '200ms' }}
+        <motion.h1 
+          initial={initial}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transition(0.2)}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-tight relative"
         >
-          {t('hero.title1')} <br />
-          <span className="gradient-text">{t('hero.title2')}</span> {t('hero.title3')}
-        </h1>
+          <span className="glitch-text" data-text={t('hero.title1')}>
+            {t('hero.title1')}
+          </span> <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-nexa-primary to-nexa-secondary animate-gradient-x">{t('hero.title2')}</span> 
+          <span className="glitch-text" data-text={t('hero.title3')}>{t('hero.title3')}</span>
+        </motion.h1>
         
-        <p 
-          className="max-w-2xl mx-auto text-xl text-gray-400 mb-10 leading-relaxed opacity-0 animate-fade-in-up"
-          style={{ animationDelay: '400ms' }}
+        <motion.p 
+          initial={initial}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transition(0.4)}
+          className="max-w-2xl mx-auto text-xl text-gray-400 mb-10 leading-relaxed"
         >
           {t('hero.subtitle')}
-        </p>
+        </motion.p>
         
-        <div 
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-fade-in-up"
-          style={{ animationDelay: '600ms' }}
+        <motion.div 
+          initial={initial}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transition(0.6)}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <a 
             href="/planos"
@@ -109,35 +111,29 @@ export const Hero: React.FC = () => {
           
           <Link 
             to="/portfolio" 
-            className="w-full sm:w-auto px-6 sm:px-8 py-4 glass-effect text-white text-lg font-medium rounded-full hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 sm:px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white text-lg font-medium rounded-full hover:bg-white/10 transition-all flex items-center justify-center gap-2"
           >
             {t('hero.cta_secondary')}
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </Link>
-        </div>
+        </motion.div>
+
+        {/* 3D Mockup Visual */}
+        <HeroMockup rotateX={rotateX} rotateY={rotateY} />
 
         {/* Stats */}
-        <div 
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-800 pt-10 opacity-0 animate-fade-in-up"
-          style={{ animationDelay: '800ms' }}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-800 pt-10"
         >
-          <div>
-            <div className="text-3xl font-bold text-white">300+</div>
-            <div className="text-sm text-gray-500 mt-1">{t('hero.stats.projects')}</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-white">98%</div>
-            <div className="text-sm text-gray-500 mt-1">{t('hero.stats.clients')}</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-white">3x</div>
-            <div className="text-sm text-gray-500 mt-1">{t('hero.stats.conversion')}</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-white">24h</div>
-            <div className="text-sm text-gray-500 mt-1">{t('hero.stats.support')}</div>
-          </div>
-        </div>
+          <AnimatedStat value={300} suffix="+" label={t('hero.stats.projects')} />
+          <AnimatedStat value={98} suffix="%" label={t('hero.stats.clients')} />
+          <AnimatedStat value={3} suffix="x" label={t('hero.stats.conversion')} />
+          <AnimatedStat value={24} suffix="h" label={t('hero.stats.support')} />
+        </motion.div>
       </div>
     </section>
   );

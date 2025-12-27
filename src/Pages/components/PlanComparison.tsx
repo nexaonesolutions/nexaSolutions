@@ -71,20 +71,20 @@ export const PlanComparison: React.FC = () => {
         <div className="overflow-x-auto custom-scrollbar pb-4 -mx-4 px-4 md:mx-0 md:px-0">
           <table className="w-full text-left border-collapse min-w-[700px]">
             <thead>
-              <tr>
-                <th className="p-3 bg-nexa-dark sticky left-0 z-20 w-1/4 border-b border-gray-800"></th>
-                <th className="p-3 text-center w-1/4 border-b border-gray-800">
+              <tr className="sticky top-0 z-30 bg-nexa-dark/95 backdrop-blur-sm">
+                <th className="p-2 sm:p-3 bg-nexa-dark sticky left-0 z-20 w-1/4 border-b border-gray-800"></th>
+                <th className="p-2 sm:p-3 text-center w-1/4 border-b border-gray-800">
                   <div className="text-lg font-bold text-gray-200">{t('pricing.plan_basic.name')}</div>
                   <div className="text-nexa-primary font-bold text-sm">150€</div>
                 </th>
-                <th className="p-3 text-center w-1/4 relative bg-nexa-card/50 rounded-t-xl border-t border-x border-nexa-primary/20">
+                <th className="p-2 sm:p-3 text-center w-1/4 relative bg-nexa-card/50 rounded-t-xl border-t border-x border-nexa-primary/20">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-nexa-primary text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase shadow-lg shadow-cyan-500/20 whitespace-nowrap">
                     {t('pricing.popular')}
                   </div>
                   <div className="text-lg font-bold text-white">{t('pricing.plan_pro.name')}</div>
                   <div className="text-nexa-primary font-bold text-sm">250€</div>
                 </th>
-                <th className="p-3 text-center w-1/4 border-b border-gray-800">
+                <th className="p-2 sm:p-3 text-center w-1/4 border-b border-gray-800">
                   <div className="text-lg font-bold text-nexa-secondary">{t('pricing.plan_enterprise.name')}</div>
                   <div className="text-nexa-secondary font-bold text-sm">400€</div>
                 </th>
@@ -101,7 +101,7 @@ export const PlanComparison: React.FC = () => {
                       className="cursor-pointer group hover:bg-white/5 transition-colors"
                     >
                       <td colSpan={4} className="p-0">
-                        <div className="sticky left-0 bg-nexa-dark/95 backdrop-blur-sm z-10 w-full flex items-center justify-between p-3 border-b border-gray-800 group-hover:bg-white/5 transition-colors">
+                        <div className="sticky left-0 bg-nexa-dark/95 backdrop-blur-sm z-10 w-full flex items-center justify-between p-2 sm:p-3 border-b border-gray-800 group-hover:bg-white/5 transition-colors">
                             <span className="font-bold text-gray-400 uppercase text-xs tracking-wider flex items-center gap-2">
                               {category.name}
                             </span>
@@ -115,13 +115,13 @@ export const PlanComparison: React.FC = () => {
                     {/* Feature Rows */}
                     {isOpen && category.features.map((feature, fIdx) => (
                       <tr key={fIdx} className="hover:bg-white/5 transition-colors group">
-                        <td className="p-3 text-gray-300 text-sm font-medium sticky left-0 bg-nexa-dark sm:bg-transparent z-10 flex items-center gap-2 border-r border-gray-800/50 sm:border-r-0 shadow-[4px_0_24px_-2px_rgba(0,0,0,0.5)] sm:shadow-none">
+                        <td className="p-2 sm:p-3 text-gray-300 text-sm font-medium sticky left-0 bg-nexa-dark sm:bg-transparent z-10 flex items-center gap-2 border-r border-gray-800/50 sm:border-r-0 shadow-[4px_0_24px_-2px_rgba(0,0,0,0.5)] sm:shadow-none">
                           <span className="truncate">{feature.name}</span>
                           <HelpCircle className="w-3 h-3 text-gray-700 cursor-help opacity-0 group-hover:opacity-100 transition-opacity" />
                         </td>
                         
                         {/* Basic */}
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center">
                           {typeof feature.basic === 'boolean' ? (
                             feature.basic ? <Check className="w-4 h-4 text-nexa-primary mx-auto" /> : <Minus className="w-4 h-4 text-gray-800 mx-auto" />
                           ) : (
@@ -130,7 +130,7 @@ export const PlanComparison: React.FC = () => {
                         </td>
 
                         {/* Intermediate */}
-                        <td className="p-3 text-center bg-nexa-card/30 border-x border-gray-800/50">
+                        <td className="p-2 sm:p-3 text-center bg-nexa-card/30 border-x border-gray-800/50">
                           {typeof feature.inter === 'boolean' ? (
                             feature.inter ? <Check className="w-4 h-4 text-nexa-primary mx-auto" /> : <Minus className="w-4 h-4 text-gray-800 mx-auto" />
                           ) : (
@@ -139,7 +139,7 @@ export const PlanComparison: React.FC = () => {
                         </td>
 
                         {/* Advanced */}
-                        <td className="p-3 text-center">
+                        <td className="p-2 sm:p-3 text-center">
                           {typeof feature.adv === 'boolean' ? (
                             feature.adv ? <Check className="w-4 h-4 text-nexa-secondary mx-auto" /> : <Minus className="w-4 h-4 text-gray-800 mx-auto" />
                           ) : (

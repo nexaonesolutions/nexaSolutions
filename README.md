@@ -6,6 +6,9 @@ This project is a landing page for Nexa.
 
 Nexa was created by:
 
+
+
+
 *   **Kaua M.** - Full Stack Developer
 *   **Raul B.** - Backend Developer
 

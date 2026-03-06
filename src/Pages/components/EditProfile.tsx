@@ -4,13 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Save, ArrowLeft, Loader, Lock, Image as ImageIcon, FileText } from 'lucide-react';
 import PasswordInput from './PasswordInput';
 import { motion, useAnimation } from 'framer-motion';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { API_URL } from '../../../utils/apiConfig';
 
 const EditProfile: React.FC = () => {
-  const { user, updateUser: updateAuthUser } = useAuth(); // 1. Obtenha a função de atualização do contexto
+  const { user, token, updateUser: updateAuthUser } = useAuth(); // 1. Obtenha a função de atualização do contexto
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -96,12 +95,11 @@ const EditProfile: React.FC = () => {
         updatePayload.password = formData.password;
       }
 
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify(updatePayload)
       });
@@ -114,7 +112,7 @@ const EditProfile: React.FC = () => {
 
       updateAuthUser(data); // 2. Atualize o estado global do usuário
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
-      
+
       // Navega de volta para o perfil após o sucesso
       setTimeout(() => {
         navigate('/perfil');
@@ -140,12 +138,12 @@ const EditProfile: React.FC = () => {
 
   return (
     <div className="pt-32 sm:pt-40 flex flex-col items-center justify-start min-h-screen px-4 sm:px-6 lg:px-8 py-8 w-full animate-fade-in">
-      <motion.div 
+      <motion.div
         className="bg-nexa-card p-4 sm:p-8 rounded-2xl shadow-lg w-full max-w-2xl mx-auto"
         animate={formAnimation}
       >
-        <button 
-          onClick={() => navigate('/perfil')} 
+        <button
+          onClick={() => navigate('/perfil')}
           className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
@@ -156,15 +154,15 @@ const EditProfile: React.FC = () => {
 
         <div className="flex justify-center mb-8">
           {formData.avatar && !avatarLoadError ? (
-            <img 
-              src={formData.avatar} 
-              alt="Prévia do Avatar" 
+            <img
+              src={formData.avatar}
+              alt="Prévia do Avatar"
               className="w-24 h-24 rounded-full object-cover border-4 border-nexa-primary"
               onError={() => setAvatarLoadError(true)}
             />
           ) : (
             <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-3xl border-4 border-gray-600">
-              {(user?.name || 'U').split(' ').map((s: string) => s[0]).slice(0,2).join('')}
+              {(user?.name || 'U').split(' ').map((s: string) => s[0]).slice(0, 2).join('')}
             </div>
           )}
         </div>

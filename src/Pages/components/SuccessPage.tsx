@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle, AlertTriangle, Loader } from 'lucide-react';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { API_URL } from '../../../utils/apiConfig';
+import { useAuth } from '../contexts/AuthContext';
 
 const SuccessPage: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ const SuccessPage: React.FC = () => {
   const [countdown, setCountdown] = useState(10);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { user, token } = useAuth();
 
   const [orderProcessed, setOrderProcessed] = useState(false);
 
@@ -20,7 +21,6 @@ const SuccessPage: React.FC = () => {
 
       const params = new URLSearchParams(location.search);
       const paymentIntentId = params.get('payment_intent');
-      const token = localStorage.getItem('token');
 
       if (!paymentIntentId || !token) {
         setStatus('error');
@@ -37,12 +37,21 @@ const SuccessPage: React.FC = () => {
         if (!piResponse.ok) throw new Error('Failed to retrieve payment details.');
 
         const { paymentIntent } = await piResponse.json();
-        
+
         // 2. Create Order
-        const orderPayload = {
+        const paymentMethod = paymentIntent.payment_method_details?.type || (paymentIntent.payment_method_types && paymentIntent.payment_method_types[0]) || 'card';
+
+        const orderPayload: any = {
           total: paymentIntent.amount / 100,
           mainPlanName: paymentIntent.metadata.mainPlanName,
           maintenancePlanName: paymentIntent.metadata.maintenancePlanName,
+          briefing: paymentIntent.metadata?.briefing || undefined,
+          paymentMethod,
+          paymentDetails: paymentIntent.charges?.data?.[0] || undefined,
+          currency: paymentIntent.currency || undefined,
+          clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
+          clientEmail: user?.email || undefined,
+          orderId: paymentIntent.metadata?.orderId || paymentIntent.metadata?.order_id || undefined,
         };
 
         const orderResponse = await fetch(`${API_URL}/api/orders`, {
@@ -57,6 +66,10 @@ const SuccessPage: React.FC = () => {
         if (!orderResponse.ok) throw new Error('Failed to save the order.');
 
         setStatus('success');
+        localStorage.removeItem('nexa_briefing_draft');
+        sessionStorage.removeItem('nexa_main_plan');
+        sessionStorage.removeItem('nexa_maintenance_plan');
+        sessionStorage.removeItem('nexa_submitted_briefing');
 
       } catch (err: any) {
         setStatus('error');
@@ -64,8 +77,10 @@ const SuccessPage: React.FC = () => {
       }
     };
 
-    processOrder();
-  }, [location, orderProcessed]);
+    if (token) {
+      processOrder();
+    }
+  }, [location, orderProcessed, token]);
 
   useEffect(() => {
     if (status === 'success' || status === 'error') {
@@ -108,7 +123,7 @@ const SuccessPage: React.FC = () => {
             <h1 className="text-4xl font-bold mb-4">Erro ao Salvar Pedido</h1>
             <p className="text-lg text-red-400 mb-8">{errorMessage}</p>
             <p className="text-sm text-gray-500">
-              Você será redirecionado em <span className="font-bold">{countdown}</span>s. 
+              Você será redirecionado em <span className="font-bold">{countdown}</span>s.
               Se o problema persistir, entre em contato com o suporte.
             </p>
           </>

@@ -718,7 +718,7 @@ export const translations = {
       'plan_basic': {
         'name': 'Básico',
         'price': '150',
-        'currency': '€',
+        'currency': 'EUR',
         'description': 'Ideal para quem está a começar. Landing page otimizada para as suas necessidades iniciais.',
         'button_text': 'Escolher Plano Básico',
         'features': [
@@ -731,7 +731,7 @@ export const translations = {
       'plan_pro': {
         'name': 'Profissional',
         'price': '250',
-        'currency': '€',
+        'currency': 'EUR',
         'description': 'Para negócios em crescimento. Landing page avançada com mais recursos e suporte.',
         'button_text': 'Escolher Plano Profissional',
         'features': [
@@ -745,7 +745,7 @@ export const translations = {
       'plan_enterprise': {
         'name': 'Empresarial',
         'price': '400',
-        'currency': '€',
+        'currency': 'EUR',
         'description': 'Soluções personalizadas e escaláveis para grandes empresas, focadas em resultados e crescimento contínuo.',
         'button_text': 'Escolher Plano Empresarial',
         'features': [
@@ -772,7 +772,7 @@ export const translations = {
         {
           'name': 'Básico',
           'price': '50',
-          'currency': '€',
+          'currency': 'EUR',
           'desc': 'Ideal para sites menores. Atualizações de segurança mensais e monitoramento.',
           'btn': 'Selecionar Plano Básico',
           'features': [
@@ -785,7 +785,7 @@ export const translations = {
         {
           'name': 'Padrão',
           'price': '100',
-          'currency': '€',
+          'currency': 'EUR',
           'desc': 'Para sites de médio porte. Suporte prioritário, otimização de performance e backups semanais.',
           'btn': 'Selecionar Plano Padrão',
           'features': [
@@ -798,7 +798,7 @@ export const translations = {
         {
           'name': 'Premium',
           'price': '150',
-          'currency': '€',
+          'currency': 'EUR',
           'desc': 'Solução completa para grandes projetos. Manutenção proativa, relatórios detalhados e consultoria.',
           'btn': 'Selecionar Plano Premium',
           'features': [
@@ -991,6 +991,346 @@ export const translations = {
       'order_total': 'Total',
       'order_details': 'Detalhes do Pedido',
       'invoice_btn': 'Ver Fatura'
+    }
+    },
+  'es': {
+    'loading': 'Cargando...',
+    'features': {
+      'title': 'Todo lo que necesitas para una presencia online de impacto',
+      'subtitle': 'Desde un diseño deslumbrante hasta un rendimiento impecable, nuestras landing pages están construidas para convertir.',
+      'list': [
+        {
+          "icon": "Paintbrush",
+          "title": "Diseño a Medida",
+          "description": "Creamos un visual único que refleja la identidad de tu marca y cautiva a tu público objetivo."
+        },
+        {
+          "icon": "Rocket",
+          "title": "Alto Rendimiento",
+          "description": "Optimización de velocidad para garantizar que tu página cargue rápidamente, mejorando la experiencia y el SEO."
+        },
+        {
+          "icon": "Smartphone",
+          "title": "Totalmente Responsivo",
+          "description": "Tu landing page tendrá una apariencia increíble en cualquier dispositivo, ya sea de escritorio, tableta o smartphone."
+        },
+        {
+          "icon": "TrendingUp",
+          "title": "Optimizado para SEO",
+          "description": "Estructura pensada para un buen posicionamiento en los motores de búsqueda, atrayendo más tráfico orgánico."
+        },
+        {
+          "icon": "ShieldCheck",
+          "title": "Seguridad Reforzada",
+          "description": "Implementamos las mejores prácticas de seguridad para proteger tus datos y los de tus visitantes."
+        },
+        {
+          "icon": "BarChart",
+          "title": "Análisis y Métricas",
+          "description": "Integración con herramientas de análisis para que puedas seguir el rendimiento y tomar decisiones basadas en datos."
+        }
+      ]
+    },
+    'hero': {
+      'title1': 'Impulsa',
+      'title2': 'Tu Presencia',
+      'title3': 'Online',
+      'subtitle': 'Crea landing pages de alta conversión que transforman visitantes en clientes. Rápido, fácil y eficiente.',
+      'tag': 'Resultados Increíbles',
+      'cta_primary': 'Crear Mi Landing Page',
+      'cta_secondary': 'Ver Portfolio',
+      'stats': {
+        'projects': 'Proyectos Concluidos',
+        'clients': 'Satisfacción del Cliente',
+        'conversion': 'Tasa de Conversión Media',
+        'support': 'Soporte Dedicado'
+      }
+    },
+    'pricing': {
+      'title': 'Planes Flexibles para Impulsar tu Negocio',
+      'subtitle': 'Encuentra la solución perfecta que se alinee con tus objetivos y presupuesto. Empieza hoy mismo a transformar tu presencia online.',
+      'per_unique': 'por página única',
+      'modal_title': 'Detalles del Plan',
+      'close': 'Cerrar',
+      'about_btn': 'Saber Más',
+      'popular': 'Popular',
+      'premium': 'Premium',
+      'plan_basic': {
+        'name': 'Básico',
+        'price': '150',
+        'currency': 'EUR',
+        'description': 'Ideal para quienes están empezando. Landing page optimizada para tus necesidades iniciales.',
+        'button_text': 'Elegir Plan Básico',
+        'features': [
+          'Diseño Responsivo',
+          'Optimización SEO Básica',
+          'Formulario de Contacto',
+          'Soporte por Email'
+        ]
+      },
+      'plan_pro': {
+        'name': 'Profesional',
+        'price': '250',
+        'currency': 'EUR',
+        'description': 'Para negocios en crecimiento. Landing page avanzada con más recursos y soporte.',
+        'button_text': 'Elegir Plan Profesional',
+        'features': [
+          'Todo del Plan Básico',
+          'Diseño Personalizado',
+          'Integración con CRM',
+          'Optimización de Conversión',
+          'Soporte Prioritario'
+        ]
+      },
+      'plan_enterprise': {
+        'name': 'Empresarial',
+        'price': '400',
+        'currency': 'EUR',
+        'description': 'Soluciones personalizadas y escalables para grandes empresas, enfocadas en resultados y crecimiento continuo.',
+        'button_text': 'Elegir Plan Empresarial',
+        'features': [
+          'Todo del Plan Profesional',
+          'Desarrollo Personalizado',
+          'Gestión Dedicada',
+          'Análisis de Marketing Completo',
+          'SLA Personalizado'
+        ]
+      }
+    },
+    'maintenance': {
+      'title': 'Mantenimiento y Soporte Continuo',
+      'subtitle': 'Garantizamos que tu sitio permanezca rápido, seguro y actualizado, para que puedas centrarte en tu negocio.',
+      'why_title': '¿Por qué tener un plan de',
+      'monthly_plans': 'Planes Mensuales',
+      'add_plan_title': 'Añadir un',
+      'add_plan_highlight': 'Plan de Mantenimiento',
+      'why_desc': 'Un plan de mantenimiento garantiza la seguridad, el rendimiento y la actualización constante de tu sitio web, protegiendo tu inversión y asegurando una experiencia perfecta para tus usuarios.',
+      'per_month': 'por mes',
+      'recommended': 'Recomendado',
+      'no_plan_button': 'Seguir sin plan de mantenimiento',
+      'plans': [
+        {
+          'name': 'Básico',
+          'price': '50',
+          'currency': 'EUR',
+          'desc': 'Ideal para sitios web más pequeños. Actualizaciones de seguridad mensuales y monitorización.',
+          'btn': 'Seleccionar Plan Básico',
+          'features': [
+            'Monitorización de Uptime 24/7',
+            'Copias de Seguridad Semanales',
+            'Actualizaciones de Seguridad',
+            'Soporte vía Email'
+          ]
+        },
+        {
+          'name': 'Estándar',
+          'price': '100',
+          'currency': 'EUR',
+          'desc': 'Para sitios web de tamaño medio. Soporte prioritario, optimización de rendimiento y copias de seguridad semanales.',
+          'btn': 'Seleccionar Plan Estándar',
+          'features': [
+            'Todo del plan Básico',
+            'Optimización de Rendimiento',
+            'Informe Mensual',
+            'Soporte Prioritario'
+          ]
+        },
+        {
+          'name': 'Premium',
+          'price': '150',
+          'currency': 'EUR',
+          'desc': 'Solución completa para grandes proyectos. Mantenimiento proactivo, informes detallados y consultoría.',
+          'btn': 'Seleccionar Plan Premium',
+          'features': [
+            'Todo del plan Estándar',
+            'Copias de Seguridad Diarias',
+            'Consultoría Estratégica',
+            'Soporte Dedicado 24/7'
+          ]
+        }
+      ]
+    },
+    'portfolio': {
+      'title': 'Nuestro Portfolio de Éxito',
+      'subtitle': 'Explora algunos de los proyectos que hemos tenido el placer de desarrollar para nuestros clientes.',
+      'intro': 'Desde startups innovadoras hasta empresas consolidadas, creamos soluciones digitales que no solo cumplen, sino que superan las expectativas. Cada proyecto es una asociación, un viaje para transformar una visión en una realidad digital impactante.'
+    },
+    'nav': {
+      'home': 'Inicio',
+      'services': 'Servicios',
+      'plans': 'Planes',
+      'maintenance': 'Mantenimiento',
+      'portfolio': 'Portfolio',
+      'testimonials': 'Testimonios',
+      'about': 'Sobre Nosotros',
+      'talk': 'Habla con nosotros',
+      'backToPlans': 'Volver a los Planes',
+      'support': 'Soporte',
+      'startNow': 'Comenzar Ahora'
+    },
+    'auth': {
+      'login': 'Iniciar Sesión',
+      'logout': 'Cerrar Sesión',
+      'login_title': '¡Bienvenido de nuevo!',
+      'loginTitle': '¡Bienvenido de nuevo!',
+      'or': 'o',
+      'registerNow': 'regístrate ahora',
+      'loginNow': 'inicia sesión ahora',
+      'emailAddress': 'Dirección de correo electrónico',
+      'password': 'Contraseña',
+      'signIn': 'Iniciar Sesión',
+      'login_desc': 'Accede a tu cuenta para continuar.',
+      'profile': 'Mi Perfil',
+      'forgot_password': '¿Olvidaste la contraseña?',
+      'forgot_password_title': 'Recuperar Contraseña',
+      'forgot_password_desc': 'Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
+      'forgot_password_success': 'Si existe una cuenta con este correo electrónico, se ha enviado un enlace de restablecimiento.',
+      'forgot_password_submit': 'Enviar Enlace',
+      'password_placeholder': 'Contraseña',
+      'email_placeholder': 'Correo electrónico',
+      'remember_me': 'Recordarme',
+      'back_to_login': 'Volver a iniciar sesión',
+      'register_title': 'Crear Cuenta',
+      'registerTitle': 'Crear Cuenta',
+      'register_desc': 'Únete a nosotros y empieza a crear hoy mismo.',
+      'register_button': 'Registrar',
+      'register': 'Registrar',
+      'no_account': '¿No tienes una cuenta?',
+      'go_to_register': 'Regístrate',
+      'already_have_account': '¿Ya tienes una cuenta?',
+      'go_to_login': 'Inicia sesión',
+      'passwordsMismatch': 'Las contraseñas no coinciden.',
+      'registrationSuccess': '¡Registro realizado con éxito! Redirigiendo para iniciar sesión...',
+      'registrationFailed': 'Error en el registro. Por favor, inténtalo de nuevo.',
+      'networkError': 'Error de red. Por favor, comprueba tu conexión.',
+      'name': 'Nombre Completo',
+      'cpf': 'NIF',
+      'phone': 'Teléfono',
+      'changeAvatar': 'Cambiar avatar',
+      'confirmPassword': 'Confirmar Contraseña',
+      'profileTitle': 'Mi Perfil',
+      'personalInfo': 'Información Personal',
+      'updateProfile': 'Guardar',
+      'changePassword': 'Cambiar Contraseña',
+      'oldPassword': 'Contraseña Antigua',
+      'newPassword': 'Nueva Contraseña',
+      'confirmNewPassword': 'Confirmar Nueva Contraseña',
+      'changePasswordBtn': 'Guardar Contraseña',
+      'invalidPhone': 'Teléfono inválido.',
+      'invalidNif': 'NIF inválido.',
+      'invalidEmailFormat': 'Formato de correo electrónico inválido.',
+      'profileUpdateSuccess': '¡Perfil actualizado con éxito!',
+      'password_strength': {
+        'min_length': 'Al menos 8 caracteres',
+        'has_upper': 'Una letra mayúscula',
+        'has_lower': 'Una letra minúscula',
+        'has_number': 'Un número',
+        'has_special': 'Un carácter especial'
+      },
+      'reset_password_title': 'Restablecer Contraseña',
+      'reset_password_desc': 'Crea una nueva contraseña segura para tu cuenta.',
+      'new_password': 'Nueva Contraseña',
+      'confirm_password': 'Confirmar Nueva Contraseña',
+      'password_mismatch': 'Las contraseñas no coinciden.',
+      'reset_password_submit': 'Guardar Nueva Contraseña',
+      'reset_password_success': '¡Tu contraseña se ha restablecido con éxito! Ya puedes iniciar sesión con la nueva contraseña.',
+      'invalid_token_title': 'Enlace Inválido',
+      'invalid_token_desc': 'Este enlace para restablecer la contraseña no es válido o ya ha expirado. Por favor, intenta solicitar uno nuevo.'
+    },
+    'testimonials': {
+      'title': 'Lo que dicen nuestros clientes',
+      'subtitle': 'Resultados reales de empresas que confían en Nexa.',
+      'items': [
+        {
+          "content": "Nexa transformó nuestra presencia online. ¡La nueva landing page es preciosa y las conversiones han aumentado 3x!",
+          "role": "CEO"
+        },
+        { "content": "El proceso fue increíblemente fluido y el equipo superó nuestras expectativas. ¡Muy recomendable!", "role": "Directora de Marketing" },
+        { "content": "Profesionalidad y calidad excepcionales. El resultado final fue mucho mejor de lo que imaginábamos.", "role": "Fundador" }
+      ]
+
+    },
+    'cta': {
+      'title': '¿Listo para elevar tu presencia online?',
+      'highlight': 'No pierdas más tiempo. ¡Da el siguiente paso!',
+      'desc': 'Hablemos sobre cómo podemos ayudar a tu negocio a crecer.',
+      'btn_primary': 'Ver Nuestros Planes',
+      'btn_secondary': 'Habla con un experto'
+    },
+    'about': {
+      'title': 'Sobre Nexa',
+      'p1': 'Nacimos de la pasión por la tecnología y el diseño, con la misión de ayudar a las empresas a alcanzar su máximo potencial en el mundo digital.',
+      'p2': 'Creemos que una landing page no es solo una página, sino la puerta de entrada a grandes oportunidades. Combinamos estrategia, creatividad y las mejores tecnologías para crear experiencias que no solo impresionan, sino que convierten.',
+      'team_title': 'Nuestro Equipo',
+      'contact_button': 'Vamos a crear algo increíble juntos'
+    },
+    'footer': {
+      'desc': 'Transformando ideas en landing pages de alta conversión.',
+      'rights': 'Todos los derechos reservados.',
+      'company': 'Empresa',
+      'services': 'Servicios',
+      'social': 'Redes Sociales',
+      'sections': {
+        'solutions': 'Soluciones',
+        'company': 'Empresa',
+        'legal': 'Legal'
+      },
+      'links': {
+        'about': 'Sobre Nosotros',
+        'careers': 'Carreras',
+        'plans': 'Planes',
+        'maintenance': 'Mantenimiento',
+        'portfolio': 'Portfolio',
+        'terms': 'Términos de Servicio',
+        'privacy': 'Política de Privacidad'
+      }
+    },
+    'comparison': {
+      'title': 'Comparación Detallada de los Planes',
+      'subtitle': 'Mira lo que cada plan ofrece y elige el ideal para ti.',
+      'btn': 'Solicitar Presupuesto',
+      'categories': {
+        'design': 'Diseño y Apariencia',
+        'tech': 'Tecnología y Rendimiento',
+        'marketing': 'Marketing y Análisis',
+        'support': 'Soporte y Entrega'
+      }
+    },
+    'features_list': {
+      'design_custom': 'Diseño Personalizado',
+      'responsive': 'Responsivo (Móvil/Tableta)',
+      'micro_animations': 'Microanimaciones',
+      'id_premium': 'Identidad Visual Premium',
+      'dark_mode': 'Modo Oscuro/Claro',
+      'hosting': 'Alojamiento Optimizado',
+      'ssl': 'Certificado SSL (HTTPS)',
+      'speed_opt': 'Optimización de Velocidad',
+      'whatsapp': 'Integración WhatsApp',
+      'crm_api': 'Integración CRM/API',
+      'contact_form': 'Formulario de Contacto',
+      'copywriting': 'Copywriting (Textos)',
+      'pixel': 'Instalación Pixel FB/Google',
+      'analytics': 'Google Analytics 4',
+      'ab_testing': 'Pruebas A/B',
+      'delivery': 'Plazo de Entrega',
+      'revisions': 'Revisiones',
+      'training': 'Formación de Uso',
+      'priority': 'Prioridad en el Soporte',
+      'values': { 'basic': 'Básica', 'advanced': 'Avanzada', 'extreme': 'Extrema', 'total': 'Total', 'days3': '3 Días', 'days5': '5 Días', 'days10': '7-10 Días', 'rev1': '1 Ronda', 'rev2': '2 Rondas', 'rev_unl': 'Ilimitadas' }
+    },
+    'profile': {
+      'title': 'Mi Perfil',
+      'edit_profile': 'Editar perfil',
+      'back': 'Volver',
+      'name': 'Nombre Completo',
+      'name_label': 'Nombre',
+      'email': 'Dirección de Correo Electrónico',
+      'order_history_title': 'Historial de Pedidos',
+      'no_orders': 'Aún no has realizado ningún pedido.',
+      'order_date': 'Fecha',
+      'order_total': 'Total',
+      'order_details': 'Detalles del Pedido',
+      'invoice_btn': 'Ver Factura'
     }
     }
   }

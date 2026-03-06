@@ -49,7 +49,7 @@ interface FullPlan extends Plan {
 
 
 export const Pricing: React.FC = () => {
-  const { t, isLoading: isLanguageLoading } = useLanguage();
+  const { t, isLoading: isLanguageLoading, language } = useLanguage();
   const { user, setPendingOrder } = useAuth();
   const navigate = useNavigate();
   // State for original details modal
@@ -81,16 +81,26 @@ export const Pricing: React.FC = () => {
       return;
     }
 
+    const getPriceAndCurrency = (basePrice: number) => {
+      if (language === 'pt-BR') return { price: (basePrice * 6).toString(), currency: 'R$' };
+      if (language === 'en') return { price: (basePrice * 1.1).toFixed(0), currency: '$' };
+      return { price: basePrice.toString(), currency: '€' };
+    };
+
+    const basic = getPriceAndCurrency(150);
+    const pro = getPriceAndCurrency(250);
+    const ent = getPriceAndCurrency(400);
+
     const fetchedPlans: FullPlan[] = [
-      { id: 'plan_basic', price: planBasic.price, currency: planBasic.currency, isPopular: false, isPremium: false, data: planBasic, level: 'basic', name: planBasic.name },
-      { id: 'plan_pro', price: planPro.price, currency: planPro.currency, isPopular: true, isPremium: false, data: planPro, level: 'inter', name: planPro.name },
-      { id: 'plan_enterprise', price: planEnterprise.price, currency: planEnterprise.currency, isPopular: false, isPremium: true, data: planEnterprise, level: 'adv', name: planEnterprise.name }
+      { id: 'plan_basic', price: basic.price, currency: basic.currency, isPopular: false, isPremium: false, data: { ...planBasic, currency: basic.currency }, level: 'basic', name: planBasic.name },
+      { id: 'plan_pro', price: pro.price, currency: pro.currency, isPopular: true, isPremium: false, data: { ...planPro, currency: pro.currency }, level: 'inter', name: planPro.name },
+      { id: 'plan_enterprise', price: ent.price, currency: ent.currency, isPopular: false, isPremium: true, data: { ...planEnterprise, currency: ent.currency }, level: 'adv', name: planEnterprise.name }
     ];
 
     setPlans(fetchedPlans);
     setIsLoading(false); // Done loading plans
 
-  }, [isLanguageLoading, t]);
+  }, [isLanguageLoading, t, language]);
 
   // Lock body scroll and handle Escape key when any modal is open
   useEffect(() => {

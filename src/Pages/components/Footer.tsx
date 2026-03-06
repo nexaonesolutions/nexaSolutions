@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Instagram, Linkedin, Twitter, Github, Facebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -16,9 +16,9 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
   const { t } = useLanguage();
 
-  const particlesInit = async (main: any) => {
+  const particlesInit = useCallback(async (main: any) => {
     await loadFull(main);
-  };
+  }, []);
 
   return (
     <motion.footer
@@ -31,8 +31,10 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
     >
       <Particles
         id="tsparticles"
+        className="absolute inset-0 z-0"
         init={particlesInit}
         options={{
+          fullScreen: { enable: false },
           background: {
             color: {
               value: 'transparent',
@@ -42,7 +44,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
           interactivity: {
             events: {
               onHover: {
-                enable: true,
+                enable: false,
                 mode: 'repulse',
               },
               resize: true,
@@ -83,7 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
                 enable: true,
                 area: 800,
               },
-              value: 30,
+              value: 15,
             },
             opacity: {
               value: 0.1,
@@ -95,10 +97,10 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
               value: { min: 1, max: 5 },
             },
           },
-          detectRetina: true,
+          detectRetina: false,
         }}
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12 mb-16">
           <motion.div variants={footerStyle} className="col-span-1 md:col-span-1 text-left">
             <div className="flex items-center space-x-2 mb-6">

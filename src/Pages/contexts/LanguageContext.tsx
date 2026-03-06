@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 
-export type Language = 'en' | 'pt-BR' | 'pt-PT';
+export type Language = 'en' | 'pt-BR' | 'pt-PT' | 'es';
+export type Currency = 'USD' | 'BRL' | 'EUR';
 
 // Helper function to safely access nested properties
 const get = (obj: Record<string, any>, path: string, defaultValue: any = undefined) => {
@@ -22,6 +23,7 @@ import { translations as allTranslations } from '../../../utils/translations';
 // Define the shape of the context
 interface LanguageContextType {
   language: Language;
+  currency: Currency;
   setLanguage: (language: Language) => void;
   t: <T>(key: string) => T | string;
   isLoading: boolean;
@@ -46,12 +48,25 @@ interface LanguageProviderProps {
 
 // The provider component
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(
+  const [language, setLanguageState] = useState<Language>(
     (localStorage.getItem('language') as Language) || 'pt-BR'
   );
+  const [currency, setCurrency] = useState<Currency>('BRL');
   const [translations, setTranslations] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    if (lang === 'en') {
+      setCurrency('USD');
+    } else if (lang === 'pt-BR') {
+      setCurrency('BRL');
+    } else if (lang === 'es' || lang === 'pt-PT') {
+      setCurrency('EUR');
+    }
+    localStorage.setItem('language', lang);
+  };
+  
   useEffect(() => {
     setIsLoading(true);
     // Ensure the selected language exists in allTranslations
@@ -78,10 +93,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const value = useMemo(() => ({
     language,
+    currency,
     setLanguage,
     t,
     isLoading,
-  }), [language, t, isLoading]);
+  }), [language, currency, t, isLoading]);
 
   // Enquanto as traduções iniciais estão carregando, podemos exibir um loader
   if (isLoading && Object.keys(translations).length === 0) {

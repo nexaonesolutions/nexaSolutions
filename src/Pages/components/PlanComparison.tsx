@@ -4,7 +4,7 @@ import { Check, Minus, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const PlanComparison: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   // State to manage collapsible sections. Defaulting to all open allows easy scanning,
   // but users can close them to save space.
@@ -17,6 +17,16 @@ export const PlanComparison: React.FC = () => {
         : [...prev, index]
     );
   };
+
+  const getPriceAndCurrency = (basePrice: number) => {
+    if (language === 'pt-BR') return { price: (basePrice * 6).toString(), currency: 'R$' };
+    if (language === 'en') return { price: (basePrice * 1.1).toFixed(0), currency: '$' };
+    return { price: basePrice.toString(), currency: '€' };
+  };
+
+  const basic = getPriceAndCurrency(150);
+  const pro = getPriceAndCurrency(250);
+  const ent = getPriceAndCurrency(400);
 
   const categories = [
     {
@@ -75,18 +85,18 @@ export const PlanComparison: React.FC = () => {
                 <th className="p-2 sm:p-3 bg-nexa-dark sticky left-0 z-20 w-1/4 border-b border-gray-800"></th>
                 <th className="p-2 sm:p-3 text-center w-1/4 border-b border-gray-800">
                   <div className="text-lg font-bold text-gray-200">{t('pricing.plan_basic.name')}</div>
-                  <div className="text-nexa-primary font-bold text-sm">150€</div>
+                  <div className="text-nexa-primary font-bold text-sm">{basic.currency} {basic.price}</div>
                 </th>
                 <th className="p-2 sm:p-3 text-center w-1/4 relative bg-nexa-card/50 rounded-t-xl border-t border-x border-nexa-primary/20">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-nexa-primary text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase shadow-lg shadow-cyan-500/20 whitespace-nowrap">
                     {t('pricing.popular')}
                   </div>
                   <div className="text-lg font-bold text-white">{t('pricing.plan_pro.name')}</div>
-                  <div className="text-nexa-primary font-bold text-sm">250€</div>
+                  <div className="text-nexa-primary font-bold text-sm">{pro.currency} {pro.price}</div>
                 </th>
                 <th className="p-2 sm:p-3 text-center w-1/4 border-b border-gray-800">
                   <div className="text-lg font-bold text-nexa-secondary">{t('pricing.plan_enterprise.name')}</div>
-                  <div className="text-nexa-secondary font-bold text-sm">400€</div>
+                  <div className="text-nexa-secondary font-bold text-sm">{ent.currency} {ent.price}</div>
                 </th>
               </tr>
             </thead>

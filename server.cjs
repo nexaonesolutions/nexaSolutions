@@ -6,16 +6,12 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const mercadopago = require('mercadopago');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- Configuração do Mercado Pago ---
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN,
-});
+// Mercado Pago removed — Stripe is the single payment provider in this project
 
 // --- Middleware de Autenticação JWT ---
 const authenticateToken = (req, res, next) => {
@@ -66,32 +62,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
   }
 });
 
-// --- Endpoint para Mercado Pago (Brasil - BRL) ---
-app.post('/api/create-preference', async (req, res) => {
-  const { title, unit_price, quantity, currency_id } = req.body;
-  const preference = {
-    items: [{ title, unit_price: Number(unit_price), quantity: Number(quantity), currency_id }],
-    back_urls: {
-      success: `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/success`,
-      failure: `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/failure`,
-      pending: `${process.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/pending`,
-    },
-    auto_return: 'approved',
-    payment_methods: {
-      excluded_payment_methods: [],
-      excluded_payment_types: [],
-      installments: 1, // Example: Disallow installments
-    },
-  };
-
-  try {
-    const response = await mercadopago.preferences.create(preference);
-    res.send({ preferenceId: response.body.id });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: error.message });
-  }
-});
+// Mercado Pago endpoints removed. Stripe backend routes are defined in backend/src and used by the frontend.
 
 // --- Endpoint para buscar histórico de pedidos (MOCK) ---
 app.get('/api/orders', authenticateToken, (req, res) => {

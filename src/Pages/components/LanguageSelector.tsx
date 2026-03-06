@@ -4,23 +4,16 @@ import { Globe, Check } from 'lucide-react';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 
 const languages: { code: Language; name: string; flag: string }[] = [
-  { code: 'pt', name: 'Português', flag: '🇧🇷' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'pt-BR', name: 'Português (BR)', flag: '🇧🇷' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'pt-PT', name: 'Português (PT)', flag: '🇵🇹' },
 ];
 
 export const LanguageSelector: React.FC = () => {
   const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Recuperar idioma salvo ao montar o componente (Solução alternativa se não estiver no Context)
-  useEffect(() => {
-    const saved = localStorage.getItem('language') as Language;
-    if (saved && saved !== language && ['pt', 'en', 'es'].includes(saved)) {
-      setLanguage(saved);
-    }
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -34,7 +27,6 @@ export const LanguageSelector: React.FC = () => {
 
   const handleSelect = (code: Language) => {
     setLanguage(code);
-    localStorage.setItem('language', code); // Salva a escolha
     setIsOpen(false);
   };
 

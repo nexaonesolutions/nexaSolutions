@@ -61,6 +61,7 @@
     "fdir": "^6.5.0",
     "fill-range": "^7.1.1",
     "finalhandler": "^2.1.1",
+    "firebase": "^12.10.0",
     "forwarded": "^0.2.0",
     "framer-motion": "^12.0.0",
     "fresh": "^2.0.0",
@@ -217,14 +218,20 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "concurrently": "^8.2.2",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "nodemon": "^3.1.11",
     "postcss": "^8.4.38",
     "rollup-plugin-visualizer": "latest",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.56.0",
     "vite": "^6.4.1"
   }
 }

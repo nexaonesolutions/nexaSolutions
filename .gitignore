@@ -24,3 +24,10 @@ dist-ssr
 *.sln
 *.sw?
 backend/.env
+backend/serviceAccountKey.json
+backend/node_modules/
+backend/dist/
+backend/db.json
+backend/password_resets.json
+*.log
+firebase-debug.log

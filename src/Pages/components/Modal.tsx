@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import styles from './Modal.module.css';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,8 +11,6 @@ interface ModalProps {
 }
 
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
-  const isLight = false;
-
   // Bloqueia a rolagem da página de fundo quando o modal está aberto
   useEffect(() => {
     if (isOpen) {
@@ -23,85 +23,47 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        backdropFilter: 'blur(4px)',
-        opacity: 1,
-        transition: 'opacity 0.3s ease-in-out'
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          backgroundColor: isLight ? '#ffffff' : '#1a1a1a',
-          color: isLight ? '#000000' : '#ffffff',
-          borderRadius: '12px',
-          width: '100%',
-          maxWidth: '700px',
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-          border: isLight ? '1px solid #e0e0e0' : '1px solid #333',
-          position: 'relative',
-          transform: 'translateY(0)',
-          transition: 'transform 0.3s ease-out'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Cabeçalho Fixo */}
-        <div style={{
-          padding: '20px 25px',
-          borderBottom: isLight ? '1px solid #eee' : '1px solid #333',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexShrink: 0
-        }}>
-          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600' }}>{title}</h2>
-          <button
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: isLight ? '#666' : '#aaa',
-              fontSize: '28px',
-              lineHeight: '1',
-              cursor: 'pointer',
-              padding: '0 5px',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-            aria-label="Fechar"
-          >
-            &times;
-          </button>
-        </div>
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] transition-opacity"
+          />
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+              className="bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Cabeçalho Fixo */}
+              <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5 shrink-0">
+                <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                  aria-label="Fechar"
+                >
+                  <X size={24} />
+                </button>
+              </div>
 
-        {/* Conteúdo com Rolagem */}
-        <div style={{
-          padding: '25px',
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          lineHeight: '1.6'
-        }}>
-          {children}
-        </div>
-      </div>
-    </div>
+              {/* Conteúdo com Rolagem */}
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                {children}
+              </div>
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 };

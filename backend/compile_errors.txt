@@ -1,0 +1,4 @@
+﻿src/controllers/admin.controller.ts(83,42): error TS2339: Property 'date' does not exist on type '{ clientName: any; clientEmail: any; }'.
+src/controllers/admin.controller.ts(83,71): error TS2339: Property 'date' does not exist on type '{ clientName: any; clientEmail: any; }'.
+src/controllers/auth.controller.ts(594,17): error TS2339: Property 'id' does not exist on type '{ email: string; password: string; name: string; cpf: string; phone: string; role: string; }'.
+src/restart.ts(2,1): error TS2304: Cannot find name 'restart'.

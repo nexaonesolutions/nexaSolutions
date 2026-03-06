@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ExternalLink, Image as ImageIcon, Cpu } from 'lucide-react';
+import { ExternalLink, Image as ImageIcon, Cpu, FolderOpen } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import portfolioData from './portfolio-data.json';
 import { ProjectGrid } from './ProjectGrid';
 import { ProjectCard } from './ProjectCard';
-import cardStyles from './ProjectCard.module.css';
 
 interface PortfolioItem {
   id: number;
@@ -48,6 +47,28 @@ export const OptimizedImage = ({ imageUrl, title }: { imageUrl: string; title: s
   );
 };
 
+// Componente de Skeleton para carregamento
+const PortfolioSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div key={i} className="bg-gray-900/40 rounded-xl overflow-hidden h-[450px] border border-gray-800/50 animate-pulse">
+        <div className="h-56 bg-gray-800/50" />
+        <div className="p-6 space-y-4">
+          <div className="h-7 bg-gray-800/50 rounded w-3/4" />
+          <div className="space-y-2">
+             <div className="h-3 bg-gray-800/30 rounded w-full" />
+             <div className="h-3 bg-gray-800/30 rounded w-5/6" />
+          </div>
+          <div className="flex gap-2 pt-4">
+            <div className="h-6 w-20 bg-gray-800/30 rounded-full" />
+            <div className="h-6 w-20 bg-gray-800/30 rounded-full" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export const Portfolio: React.FC = () => {
   const { t, language } = useLanguage();
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -55,18 +76,24 @@ export const Portfolio: React.FC = () => {
 
   useEffect(() => {
     // Simulate fetching data
-    setItems(portfolioData);
-    setLoading(false);
+    const timer = setTimeout(() => {
+      setItems(portfolioData);
+      setLoading(false);
+    }, 800); // Pequeno delay para suavizar a transição e mostrar o skeleton
+    return () => clearTimeout(timer);
   }, []);
   
   // Traduções dinâmicas baseadas no idioma
   const processedItems = useMemo(() => {
-    const lang = language || 'en';
+    let langKey = 'en';
+    if (language === 'pt-BR' || language === 'pt-PT') langKey = 'pt';
+    else if (language === 'es') langKey = 'es';
+
     return items.map(item => ({
       ...item,
-      category: item.category[lang] || item.category['en'],
-      description: item.description[lang] || item.description['en'],
-      highlights: item.highlights[lang] || item.highlights['en'],
+      category: item.category[langKey] || item.category['en'],
+      description: item.description[langKey] || item.description['en'],
+      highlights: item.highlights[langKey] || item.highlights['en'],
     }));
   }, [items, language]);
 
@@ -78,34 +105,23 @@ export const Portfolio: React.FC = () => {
   // Typewriter effect state
   const [typewriterText, setTypewriterText] = useState({ part1: '', part2: '' });
 
-  const typingAudio = useMemo(() => new Audio('/sounds/typing.mp3'), []);
-
   useEffect(() => {
     const text1 = "SELECTED";
     const text2 = "WORKS";
     let i = 0;
 
-    // Função para tocar o som de tecla
-    const playTypingSound = () => {
-      typingAudio.volume = 0.15; // Volume sutil
-      typingAudio.currentTime = 0;
-      typingAudio.play().catch(() => {}); // Ignora bloqueios de autoplay do navegador
-    };
-
     const timer = setInterval(() => {
       if (i <= text1.length) {
         setTypewriterText(prev => ({ ...prev, part1: text1.slice(0, i) }));
-        if (i > 0 && i < text1.length) playTypingSound();
       } else if (i <= text1.length + text2.length) {
         setTypewriterText(prev => ({ ...prev, part2: text2.slice(0, i - text1.length) }));
-        if (i > text1.length && i < text1.length + text2.length) playTypingSound();
       } else {
         clearInterval(timer);
       }
       i++;
     }, 100);
     return () => clearInterval(timer);
-  }, [typingAudio]);
+  }, []);
 
   // Reseta o filtro quando o idioma muda para evitar inconsistências
   useEffect(() => {
@@ -121,20 +137,34 @@ export const Portfolio: React.FC = () => {
     return processedItems.filter(item => item.category === activeFilter);
   }, [activeFilter, processedItems, allLabel]);
   
-  const [visibleItems, setVisibleItems] = useState(3);
+  const [visibleItems, setVisibleItems] = useState(6);
+
+  // Reseta a paginação quando o filtro muda
+  useEffect(() => {
+    setVisibleItems(6);
+  }, [activeFilter]);
 
   const paginatedItems = useMemo(() => {
     return filteredItems.slice(0, visibleItems);
   }, [filteredItems, visibleItems]);
 
   const handleLoadMore = () => {
-    setVisibleItems(prev => prev + 3);
+    setVisibleItems(prev => prev + 6);
   };
 
   if (loading) {
     return (
-      <section className="py-20 bg-black relative overflow-hidden min-h-screen flex items-center justify-center">
-        <div className="text-cyan-400">Loading Portfolio...</div>
+      <section className="py-20 bg-black relative overflow-hidden min-h-screen">
+        {/* Background duplicado para consistência visual durante o load */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#083344_1px,transparent_1px),linear-gradient(to_bottom,#083344_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none opacity-20" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+           <div className="mb-16 pt-10">
+              <div className="h-12 w-64 bg-gray-800/50 rounded animate-pulse mb-4"/>
+              <div className="h-4 w-96 bg-gray-800/30 rounded animate-pulse"/>
+           </div>
+           <PortfolioSkeleton />
+        </div>
       </section>
     );
   }
@@ -170,56 +200,64 @@ export const Portfolio: React.FC = () => {
                     <button 
                         key={category}
                         onClick={() => setActiveFilter(category)}
-                        className={`relative px-5 py-2 text-sm font-mono uppercase tracking-wider transition-all duration-300 border-l-2 [clip-path:polygon(10px_0,100%_0,100%_calc(100%-10px),calc(100%-10px)_100%,0_100%)] ${
+                        className={`relative px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-300 border ${
                             activeFilter === category 
-                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_25px_rgba(34,211,238,0.3)]' 
-                            : 'bg-gray-900/50 border-gray-700 text-gray-400 hover:text-white hover:border-cyan-500/50'
+                            ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.2)]' 
+                            : 'bg-gray-900/50 border-gray-800 text-gray-400 hover:text-white hover:border-gray-600 hover:bg-gray-800'
                         }`}
                     >
                         {category}
-                        {activeFilter === category && (
-                          <span className="absolute top-0 right-0 w-2 h-2 bg-cyan-400 shadow-[0_0_15px_2px_rgba(34,211,238,0.5)]" />
-                        )}
                     </button>
                 ))}
             </div>
         </div>
 
-        {paginatedItems.length > 0 ? (
+        {filteredItems.length > 0 ? (
           <ProjectGrid>
+            <AnimatePresence mode='popLayout'>
             {paginatedItems.map((item: any) => (
-              <ProjectCard
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
                 key={item.id}
+              >
+              <ProjectCard
                 title={item.title}
                 shortDescription={item.description}
                 imageSrc={item.imageUrl}
                 technologies={item.highlights}
                 fullDescription={
                   <div>
-                    <p>{item.description}</p>
-                    <h4 className={cardStyles.modalSubheading}>
-                      Destaques do Projeto:
+                    <p className="text-gray-300 leading-relaxed mb-6">{item.description}</p>
+                    <h4 className="text-white font-bold mb-3 flex items-center gap-2">
+                      <Cpu size={16} className="text-cyan-500"/> Destaques do Projeto:
                     </h4>
-                    <ul className={cardStyles.modalList}>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8">
                       {item.highlights.map((highlight: string, index: number) => (
-                        <li key={index}>{highlight}</li>
+                        <li key={index} className="flex items-center gap-2 text-sm text-gray-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/50" />
+                            {highlight}
+                        </li>
                       ))}
                     </ul>
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div className="flex flex-wrap gap-4 mt-auto">
                       <a 
                         href={item.liveUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className={cardStyles.modalButton}
+                        className="flex items-center gap-2 px-6 py-3 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-400 transition-colors shadow-lg shadow-cyan-500/20"
                       >
-                        Ver Projeto Online <ExternalLink size={16} />
+                        Ver Projeto Online <ExternalLink size={18} />
                       </a>
                       {item.githubUrl && (
                         <a 
                           href={item.githubUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className={`${cardStyles.modalButton} ${cardStyles.modalButtonSecondary}`}
+                          className="flex items-center gap-2 px-6 py-3 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700"
                         >
                           Ver Código
                         </a>
@@ -228,28 +266,37 @@ export const Portfolio: React.FC = () => {
                   </div>
                 }
               />
+              </motion.div>
             ))}
+            </AnimatePresence>
           </ProjectGrid>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-gray-500 mt-8"
+            className="flex flex-col items-center justify-center text-center py-20 border border-dashed border-gray-800 rounded-3xl bg-gray-900/20 mt-8"
           >
-            Nenhum projeto encontrado nesta categoria.
+            <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
+              <FolderOpen className="w-8 h-8 text-gray-600" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">{t('portfolio.no_projects', 'Nenhum projeto encontrado')}</h3>
+            <p className="text-gray-500 max-w-md">
+              {t('portfolio.no_projects_desc', 'Não há projetos nesta categoria no momento. Tente selecionar outra categoria.')}
+            </p>
           </motion.div>
         )}
         
         {visibleItems < filteredItems.length && (
           <div className="mt-16 text-center">
+            <p className="text-gray-500 mb-4 text-sm font-mono">
+              Mostrando {Math.min(visibleItems, filteredItems.length)} de {filteredItems.length} projetos
+            </p>
             <button
               onClick={handleLoadMore}
-              className="group relative px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 border-2 border-cyan-500/30 text-cyan-400 hover:text-cyan-300 transition-all duration-300 rounded-lg"
+              className="group relative inline-flex items-center gap-2 px-8 py-3 bg-transparent border border-cyan-500/30 text-cyan-400 rounded-full hover:bg-cyan-500/10 transition-all duration-300"
             >
-              <div className="absolute inset-0 w-1 bg-cyan-500 transition-all duration-300 group-hover:w-full opacity-10" />
-              <div className="relative flex items-center justify-center gap-2 font-mono uppercase tracking-widest text-sm">
-                <span>Load More</span>
-              </div>
+              <span>Carregar Mais</span>
+              <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" />
             </button>
           </div>
         )}

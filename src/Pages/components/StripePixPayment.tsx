@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Copy } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../../../utils/apiConfig';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const VITE_STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
 
 const stripePromise = VITE_STRIPE_PUBLIC_KEY ? loadStripe(VITE_STRIPE_PUBLIC_KEY) : null;
@@ -13,21 +13,22 @@ interface StripePixPaymentProps {
   currency: string;
   mainPlan?: any;
   maintenancePlan?: any;
+  briefingData?: any;
 }
 
-const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, mainPlan, maintenancePlan }) => {
+const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, mainPlan, maintenancePlan, briefingData }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [copyPasteCode, setCopyPasteCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   useEffect(() => {
     let ignore = false;
     const fetchPaymentIntent = async () => {
       try {
         if (!stripePromise) {
-            throw new Error("Chave pública do Stripe não configurada (VITE_STRIPE_PUBLIC_KEY).");
+          throw new Error("Chave pública do Stripe não configurada (VITE_STRIPE_PUBLIC_KEY).");
         }
 
         let endpointCurrency = currency.toLowerCase();
@@ -37,8 +38,6 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
           endpointCurrency = 'brl';
         }
 
-        const token = localStorage.getItem('token');
-
         const payload = {
           amount: amount,
           currency: endpointCurrency,
@@ -47,8 +46,11 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
           mainPlan,
           maintenancePlan,
           userId: user?.id,
+          clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
+          clientEmail: user?.email || undefined,
           email: user?.email,
           metadata: {
+            briefing: briefingData ? JSON.stringify(briefingData).substring(0, 500) : undefined,
             userId: user?.id,
             email: user?.email,
             mainPlanName: mainPlan?.name,
@@ -57,23 +59,26 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
         };
         console.log('DEBUG: Enviando dados para criar PaymentIntent (PIX):', payload);
 
+        // Adiciona o briefing ao corpo da requisição para ser salvo no banco de dados
+        const requestBody = { ...payload, briefing: briefingData };
+
         const response = await fetch(`${API_URL}/api/payments/create-stripe-payment-intent`, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(requestBody),
         });
 
         if (ignore) return;
 
         if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Sessão expirada. Por favor, faça login novamente.');
-            }
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to create payment intent.');
+          if (response.status === 401) {
+            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+          }
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create payment intent.');
         }
 
         const { clientSecret, error: backendError } = await response.json();
@@ -84,17 +89,17 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
 
         const stripe = await stripePromise;
         if (!stripe) {
-            throw new Error("Falha ao carregar o Stripe.js.");
+          throw new Error("Falha ao carregar o Stripe.js.");
         }
 
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-        
+
         if (paymentIntent && paymentIntent.next_action?.pix_display_qr_code) {
           if (ignore) return;
           setQrCodeUrl(paymentIntent.next_action.pix_display_qr_code.image_url_png);
           setCopyPasteCode(paymentIntent.next_action.pix_display_qr_code.copyable_code);
         } else {
-            throw new Error("Could not retrieve PIX QR code from Payment Intent.");
+          throw new Error("Could not retrieve PIX QR code from Payment Intent.");
         }
 
       } catch (error: any) {
@@ -102,7 +107,7 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
         setError("Não foi possível gerar o código PIX. Por favor, verifique se esta opção de pagamento está habilitada em sua conta Stripe.");
       } finally {
         if (!ignore) {
-        setLoading(false);
+          setLoading(false);
         }
       }
     };
@@ -111,7 +116,7 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
     return () => {
       ignore = true;
     };
-  }, [amount, currency]);
+  }, [amount, currency, user, mainPlan, maintenancePlan, briefingData]);
 
   const handleCopy = () => {
     if (copyPasteCode) {
@@ -123,7 +128,7 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
   if (loading) {
     return <div className="text-center p-8">Gerando PIX...</div>;
   }
-  
+
   if (error) {
     return (
       <div className="text-center p-8 bg-red-900/20 text-red-300 border border-red-800 rounded-lg">
@@ -146,7 +151,7 @@ const StripePixPayment: React.FC<StripePixPaymentProps> = ({ amount, currency, m
           )}
         </div>
       </div>
-      
+
       <div className="relative flex items-center">
         <div className="flex-grow border-t border-gray-600"></div>
         <span className="flex-shrink mx-4 text-gray-400 text-sm">OU</span>

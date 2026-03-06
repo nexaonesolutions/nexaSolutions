@@ -1,21 +1,37 @@
+import { jest } from '@jest/globals';
+import { describe, beforeEach, it, expect } from '@jest/globals';
 import { Request, Response } from 'express';
 import { register, login, getProfile, updateProfile, changePassword } from '../controllers/auth.controller';
 import { readDb, writeDb } from '../services/db.service';
+import * as securityService from '../services/security.service';
 
 jest.mock('../services/db.service', () => ({
   readDb: jest.fn(),
   writeDb: jest.fn(),
 }));
 
-const mockRequest = (body: any = {}, user: any = null) => {
+jest.mock('../services/security.service', () => ({
+  comparePassword: jest.fn(),
+  hashPassword: jest.fn(),
+}));
+
+interface User {
+  id: number;
+  email?: string;
+  password?: string;
+  cpf?: string;
+  phone?: string;
+}
+
+const mockRequest = (body: Record<string, unknown> = {}, user: User | null = null): Request => {
   const req = {} as Request;
   req.body = body;
-  req.user = user;
+  req.user = user as any;
   req.userId = user ? user.id : null;
   return req;
 };
 
-const mockResponse = () => {
+const mockResponse = (): Response => {
   const res = {} as Response;
   res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
@@ -32,6 +48,8 @@ describe('Auth Controller', () => {
       orders: [],
     });
     (writeDb as jest.Mock).mockClear();
+    (securityService.comparePassword as jest.Mock).mockClear();
+    (securityService.hashPassword as jest.Mock).mockClear();
   });
 
   describe('register', () => {
@@ -44,8 +62,9 @@ describe('Auth Controller', () => {
         phone: '12345678901',
       });
       const res = mockResponse();
+      (securityService.hashPassword as jest.Mock).mockResolvedValue('newhashedpassword');
 
-      await (register as any)[1](req, res);
+      await register(req, res, jest.fn());
 
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(
@@ -64,11 +83,9 @@ describe('Auth Controller', () => {
         password: 'password',
       });
       const res = mockResponse();
-      const { comparePassword } = require('../services/security.service');
-      (comparePassword as jest.Mock).mockResolvedValue(true);
+      (securityService.comparePassword as jest.Mock).mockResolvedValue(true);
 
-
-      await (login as any)[1](req, res);
+      await login(req, res, jest.fn());
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
@@ -84,7 +101,7 @@ describe('Auth Controller', () => {
       const req = mockRequest({}, { id: 1 });
       const res = mockResponse();
 
-      await (getProfile as any)[1](req, res);
+      await getProfile(req, res, jest.fn());
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
@@ -100,7 +117,7 @@ describe('Auth Controller', () => {
       const req = mockRequest({ email: 'newemail@test.com', phone: '12345678901' }, { id: 1 });
       const res = mockResponse();
 
-      await (updateProfile as any)[2](req, res);
+      await updateProfile(req, res, jest.fn());
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
@@ -116,12 +133,11 @@ describe('Auth Controller', () => {
     it('should change user password', async () => {
         const req = mockRequest({ oldPassword: 'password', newPassword: 'newPassword123' }, { id: 1 });
         const res = mockResponse();
-        const { comparePassword, hashPassword } = require('../services/security.service');
-        (comparePassword as jest.Mock).mockResolvedValue(true);
-        (hashPassword as jest.Mock).mockResolvedValue('newhashedpassword');
-  
-        await (changePassword as any)[2](req, res);
-  
+        (securityService.comparePassword as jest.Mock).mockResolvedValue(true);
+        (securityService.hashPassword as jest.Mock).mockResolvedValue('newhashedpassword');
+
+        await changePassword(req, res, jest.fn());
+
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(
           expect.objectContaining({

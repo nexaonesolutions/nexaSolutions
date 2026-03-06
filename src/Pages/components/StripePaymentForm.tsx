@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/utils/apiConfig';
+import { db } from '../../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-const VITE_STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+const VITE_STRIPE_PUBLIC_KEY = (import.meta as any).env.VITE_STRIPE_PUBLIC_KEY;
 
 if (!VITE_STRIPE_PUBLIC_KEY) {
   console.error('FATAL ERROR: VITE_STRIPE_PUBLIC_KEY is not defined. Stripe payments will not be available. Please set this environment variable.');
@@ -20,9 +21,12 @@ interface StripePaymentFormProps {
   currency: string;
   mainPlan?: any;
   maintenancePlan?: any;
+  briefingData?: any;
+  orderId?: string;
 }
 
-const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) => {
+const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency, mainPlan, maintenancePlan, briefingData, orderId }) => {
+  const { user, token } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -30,6 +34,36 @@ const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) =>
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [countdown, setCountdown] = useState(5);
+
+  const logActivity = async (status: 'success' | 'failed', errorMsg?: string) => {
+    try {
+      if (!user) return;
+
+      await addDoc(collection(db, 'activity'), {
+        userId: user.id,
+        userName: user.name,
+        orderId: orderId || 'pending',
+        amount,
+        currency: currency.toLowerCase() === '€' ? 'eur' : (currency.toLowerCase() === 'r$' ? 'brl' : currency.toLowerCase()),
+        status,
+        errorMessage: errorMsg || null,
+        timestamp: serverTimestamp()
+      });
+    } catch (e) {
+      console.warn('Failed to log payment activity to Firestore:', e);
+    }
+  };
+
+  useEffect(() => {
+    if (showSuccessToast) {
+      if (countdown > 0) {
+        const timer = setInterval(() => setCountdown((prev) => prev - 1), 1000);
+        return () => clearInterval(timer);
+      } else {
+        navigate('/perfil');
+      }
+    }
+  }, [showSuccessToast, countdown, navigate]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -51,19 +85,38 @@ const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) =>
 
     if (error) {
       setErrorMessage(error.message || 'An unexpected error occurred.');
+      await logActivity('failed', error.message || 'Pagamento recusado ou erro no processamento');
       setIsLoading(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      setShowSuccessToast(true);
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            navigate('/perfil');
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      try {
+        if (token) {
+          const orderPayload: any = {
+            total: amount,
+            mainPlanName: mainPlan?.name || 'Unknown',
+            maintenancePlanName: maintenancePlan?.name || undefined,
+            briefing: briefingData || undefined,
+            paymentMethod: 'card',
+            currency: currency.toLowerCase() === '€' ? 'eur' : (currency.toLowerCase() === 'r$' ? 'brl' : currency.toLowerCase()),
+            clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
+            clientEmail: user?.email || undefined,
+            orderId: orderId || (paymentIntent as any).metadata?.orderId || (paymentIntent as any).metadata?.order_id || undefined,
+          };
+          await fetch(`${API_URL}/api/orders`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(orderPayload),
+          });
+        }
+        await logActivity('success');
+        setShowSuccessToast(true);
+      } catch (orderErr) {
+        console.error('Failed to finalize order after payment:', orderErr);
+        await logActivity('success');
+        setShowSuccessToast(true);
+      }
     } else {
       setIsLoading(false);
     }
@@ -94,9 +147,9 @@ const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) =>
         </div>
       )}
       <PaymentElement />
-      <button 
-        type="submit" 
-        disabled={!stripe || isLoading} 
+      <button
+        type="submit"
+        disabled={!stripe || isLoading}
         style={{
           marginTop: '20px',
           padding: '10px 12px',
@@ -105,8 +158,8 @@ const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) =>
           fontSize: '16px',
           width: '100%',
           boxSizing: 'border-box',
-          background: isLoading ? '#555' : '#6772e5', 
-          color: 'white', 
+          background: isLoading ? '#555' : '#6772e5',
+          color: 'white',
           cursor: isLoading ? 'not-allowed' : 'pointer',
           display: 'flex',
           justifyContent: 'center',
@@ -126,10 +179,11 @@ const CheckoutForm: React.FC<StripePaymentFormProps> = ({ amount, currency }) =>
   );
 };
 
-const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency, mainPlan, maintenancePlan }) => {
+const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency, mainPlan, maintenancePlan, briefingData }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripeFormError, setStripeFormError] = useState<string | null>(null);
-  const { user, isLoading: isAuthLoading } = useAuth();
+  const { user, token, isLoading: isAuthLoading } = useAuth();
+  const orderIdRef = useRef<string>(`order_${Date.now()}`);
 
   useEffect(() => {
     let ignore = false;
@@ -150,8 +204,6 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
           endpointCurrency = 'usd';
         }
 
-        const token = localStorage.getItem('token'); // Tenta recuperar o token de autenticação
-
         if (!token) {
           throw new Error('Você precisa estar logado para realizar o pagamento.');
         }
@@ -160,16 +212,24 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
           return;
         }
 
+        // Se houver um plano principal e o briefing ainda não foi preenchido, não cria o payment intent ainda
+        if (mainPlan && !briefingData) {
+          return;
+        }
+
+        const generatedOrderId = orderIdRef.current;
+
         const payload = {
           amount: amount,
           currency: endpointCurrency, // Ensure correct format
-          payment_method_types: ['card'],
-          orderId: `order_${Date.now()}`,
+          orderId: generatedOrderId,
           mainPlan,
           maintenancePlan,
           userId: user?.id, // Envia o ID do usuário explicitamente
           email: user?.email,
           metadata: {
+            orderId: generatedOrderId,
+            briefing: briefingData ? JSON.stringify(briefingData).substring(0, 500) : undefined, // Stripe metadata limits
             userId: user?.id,
             email: user?.email,
             mainPlanName: mainPlan?.name,
@@ -178,13 +238,16 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
         };
         console.log('DEBUG: Enviando dados para criar PaymentIntent:', payload);
 
+        // Adiciona o briefing ao corpo da requisição para ser salvo no banco de dados (sem limite de caracteres do metadata)
+        const requestBody = { ...payload, briefing: briefingData };
+
         const response = await fetch(`${API_URL}/api/payments/create-stripe-payment-intent`, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(requestBody),
         });
 
         if (ignore) return;
@@ -205,7 +268,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
         if (data.error) {
           throw new Error(data.error);
         }
-        
+
         setClientSecret(data.clientSecret);
       } catch (error: any) {
         if (ignore) return;
@@ -219,7 +282,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
     return () => {
       ignore = true;
     };
-  }, [amount, currency, user, isAuthLoading]);
+  }, [amount, currency, user, isAuthLoading, briefingData, mainPlan]);
 
   const options: StripeElementsOptions = {
     clientSecret: clientSecret || undefined,
@@ -251,7 +314,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
       {stripeFormError && <div style={{ color: '#fa755a', marginTop: '10px' }}>{stripeFormError}</div>}
       {clientSecret && stripePromise ? (
         <Elements stripe={stripePromise} options={options}>
-          <CheckoutForm amount={amount} currency={currency} />
+          <CheckoutForm amount={amount} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} orderId={orderIdRef.current} />
         </Elements>
       ) : (
         <div style={{ color: 'white', textAlign: 'center', marginTop: '20px' }}>

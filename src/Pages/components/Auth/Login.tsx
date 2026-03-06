@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import mapServerErrorToKey from '../../../../utils/serverMessageMap';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -27,7 +28,16 @@ const Login: React.FC = () => {
 
     setIsLoading(true); // Set loading to true on submission
     try {
-      const user = await login(email, password, rememberMe);
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedPassword = password;
+
+      if (!trimmedPassword) {
+        setError(t('auth.password') || 'Password is required');
+        setIsLoading(false);
+        return;
+      }
+
+      const user = await login(trimmedEmail, trimmedPassword, rememberMe);
       if (user && user.role === 'admin') {
         navigate('/admin', { replace: true });
         return;
@@ -43,10 +53,17 @@ const Login: React.FC = () => {
           navigate('/', { replace: true });
         }
       }
-    } catch (err) {
+    } catch (err: any) {
+      // Prefer server-provided message when available. Map to translation key when possible.
+      const serverMessage: string | null = err?.message || null;
+      if (serverMessage) {
+        const mapped = mapServerErrorToKey(serverMessage);
+        if (mapped) setError(t(mapped)); else setError(serverMessage);
+      } else {
         setError(t('auth.loginFailed'));
+      }
     } finally {
-        setIsLoading(false); // Set loading to false after submission (success or failure)
+      setIsLoading(false); // Set loading to false after submission (success or failure)
     }
   };
 
@@ -59,7 +76,7 @@ const Login: React.FC = () => {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
       </div>
-      
+
       <div className="max-w-md w-full space-y-8 p-10 bg-gray-800 rounded-2xl shadow-xl border border-gray-700 glass-effect relative z-10 animate-fade-in-up">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white font-sans">
@@ -124,7 +141,7 @@ const Login: React.FC = () => {
             </div>
 
             <div className="text-sm">
-              <Link to="/esqueci-senha"  className="font-medium text-nexa-primary hover:text-nexa-secondary transition-colors">
+              <Link to="/esqueci-senha" className="font-medium text-nexa-primary hover:text-nexa-secondary transition-colors">
                 {t('auth.forgot_password')}
               </Link>
             </div>

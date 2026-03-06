@@ -9,6 +9,7 @@ interface ProjectCardProps {
   fullDescription: React.ReactNode;
   imageSrc: string;
   technologies?: string[];
+  style?: React.CSSProperties;
 }
 
 const cardVariants = {
@@ -25,7 +26,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   shortDescription,
   fullDescription,
   imageSrc,
-  technologies = []
+  technologies = [],
+  style
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -34,6 +36,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       <motion.div
         className={styles.card}
         variants={cardVariants}
+        style={style}
         onClick={() => setIsModalOpen(true)}
       >
         <div className={styles.imageContainer}>
@@ -61,13 +64,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         onClose={() => setIsModalOpen(false)}
         title={title}
       >
-        <img
-          src={imageSrc}
-          alt={title}
-          className={styles.modalImage}
-        />
-        <div className={styles.modalDescription}>
-          {fullDescription}
+        <div className="space-y-6">
+          <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-lg bg-gray-900">
+            <img
+              src={imageSrc}
+              alt={title}
+              className="w-full h-auto object-cover max-h-[400px]"
+            />
+          </div>
+          <div className="text-gray-300 text-base leading-relaxed">
+            {fullDescription}
+          </div>
         </div>
       </Modal>
     </>

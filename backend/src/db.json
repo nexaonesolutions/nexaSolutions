@@ -15,7 +15,93 @@
       "name": "SOFIA MAGALHAES SIMOES",
       "cpf": "25898454055",
       "phone": "44991142050"
+    },
+    {
+      "id": 3,
+      "email": "testuser+ba9310ae@example.com",
+      "password": "06365829f8f6575e20a8fc6e8f0a4600:7f80a861186d5fb5b0ebb2abfb23e8733f7b40bfe4c8a92939916e83a1d99adb2119709dc95d06c011facdb17a11a31e765a1a5fbcff4b09277a2672450c0a46",
+      "name": "Test User",
+      "cpf": "75024273508",
+      "phone": "11912345678"
+    },
+    {
+      "id": 4,
+      "email": "claudenorfreire65@gmail.com",
+      "password": "5a76b7bc577663709db8221cd14c3f16:776c642aaafaf1f18f6734a439d56190f83ec1dbb84e7f9fe880f33bb33d8e212b3e34ec90e4c5a5fbd8d59c8f2d35c3af5e9943cbb84368e0ba15d953b06a66",
+      "name": "claudenor freire honorato",
+      "cpf": "85770270071",
+      "phone": "44999024299"
+    },
+    {
+      "id": 5,
+      "email": "e2e+1771575937,83657@example.com",
+      "password": "7b2c504b79d4fe500510e4c063aa6ab6:9a577c4c12a2cb1cb3e6af63d1dc9c680f567d11762d9fa1e442cddf87ae9567b185eb1d8933cfb1effa97cd53687bb662a666dddd2d53d7924dd37bd1a83077",
+      "name": "E2E Test",
+      "cpf": "12345678909",
+      "phone": "11999999999"
+    },
+    {
+      "id": 6,
+      "email": "asofiamagalhaess@gmail.com",
+      "password": "e05421957d08e8bfca0603a6f88ef472:34cefb3f8a8801148e845d3c682f5c199b31d58d449b18e5f6b9a9fd885c399d9dec01f1781fffa1d38583ff2740867c3b348b96f0faffa344b364c98699e391",
+      "name": "KAUA MEDEIROS HONORATO",
+      "cpf": "24479572031",
+      "phone": "44991182039"
+    },
+    {
+      "id": 7,
+      "email": "nexa2114@gmail.com",
+      "password": "c1fb266778181bb1b4df448c9e99683f:bff2046393bfb6ab5d1cdb3ba72d253b2432ef6dd47f5be9ff8a8bb7524c96d1284dfecb375ce57c2d18dba2527de3659aeb89c6cc2d59d968826e7d7118686f",
+      "name": "NEXA Solutions",
+      "cpf": "00000000000",
+      "phone": "00000000000",
+      "role": "admin"
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": "order_1772665766998",
+      "userId": "RlGUqyqv88Vw5IIyTTfRGoAxPHO2",
+      "date": "2026-03-04T23:09:27.670Z",
+      "total": 3900,
+      "mainPlanName": "Empresarial",
+      "maintenancePlanName": "Premium",
+      "briefing": {
+        "companyDescription": "sadas",
+        "productsServices": "dasdas",
+        "companyVision": "dasdas",
+        "targetAudience": "dasd",
+        "designPreferences": "dasdas",
+        "additionalNotes": "dasdas"
+      },
+      "paymentMethod": "card",
+      "paymentDetails": null,
+      "currency": "brl",
+      "status": "succeeded"
+    },
+    {
+      "id": "order_1772666015457",
+      "userId": "RlGUqyqv88Vw5IIyTTfRGoAxPHO2",
+      "date": "2026-03-04T23:13:36.176Z",
+      "total": 1800,
+      "mainPlanName": "Profissional",
+      "maintenancePlanName": "Básico",
+      "briefing": {
+        "companyDescription": "sadas",
+        "productsServices": "dasdas",
+        "companyVision": "dasdas",
+        "targetAudience": "dasdas",
+        "designPreferences": "dasdas",
+        "additionalNotes": "dasdas"
+      },
+      "paymentMethod": "card",
+      "paymentDetails": null,
+      "currency": "brl",
+      "status": "succeeded",
+      "clientName": "KAUA MEDEIROS HONORATO",
+      "clientEmail": "asofiamagalhaess@gmail.com"
+    }
+  ],
+  "messages": [],
+  "paymentAttempts": []
 }

@@ -4,28 +4,34 @@ import { Check, Shield, Zap, TrendingUp, HelpCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const Maintenance: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const rawPlans = t<any[]>('maintenance.plans');
 
   if (!Array.isArray(rawPlans)) {
     return <div>Loading plans...</div>;
   }
 
+  const getPriceAndCurrency = (basePrice: number) => {
+    if (language === 'pt-BR') return { price: (basePrice * 6).toString(), currency: 'R$' };
+    if (language === 'en') return { price: (basePrice * 1.1).toFixed(0), currency: '$' };
+    return { price: basePrice.toString(), currency: '€' };
+  };
+
   const plans = [
     {
-      price: '50',
+      ...getPriceAndCurrency(50),
       icon: Shield,
       popular: false,
       data: rawPlans[0]
     },
     {
-      price: '120',
+      ...getPriceAndCurrency(120),
       icon: Zap,
       popular: true,
       data: rawPlans[1]
     },
     {
-      price: '250',
+      ...getPriceAndCurrency(250),
       icon: TrendingUp,
       popular: false,
       data: rawPlans[2]
@@ -79,7 +85,7 @@ export const Maintenance: React.FC = () => {
                 <div>
                   <h3 className="text-xl font-bold text-white">{plan.data.name}</h3>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-sm text-gray-400">€</span>
+                    <span className="text-sm text-gray-400">{plan.currency}</span>
                     <span className="text-2xl font-bold">{plan.price}</span>
                     <span className="text-xs text-gray-500">{t('maintenance.per_month')}</span>
                   </div>

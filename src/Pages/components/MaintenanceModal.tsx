@@ -15,8 +15,14 @@ interface MaintenanceModalProps {
 }
 
 const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose, onSelectPlan, onSkip }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const rawPlans: { name: string; desc: string; btn: string, price: string, currency: string, features: string[] }[] = t('maintenance.plans') as any;
+
+  const getPriceAndCurrency = (basePrice: number) => {
+    if (language === 'pt-BR') return { price: (basePrice * 6).toString(), currency: 'R$' };
+    if (language === 'en') return { price: (basePrice * 1.1).toFixed(0), currency: '$' };
+    return { price: basePrice.toString(), currency: '€' };
+  };
 
   const plans = rawPlans.map((planData, index) => {
     let iconComponent: any; // Type as any for Lucide icon
@@ -34,10 +40,15 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose, onSelectPl
       popularStatus = false;
     }
 
+    let priceInfo = { price: '0', currency: '€' };
+    if (index === 0) priceInfo = getPriceAndCurrency(50);
+    if (index === 1) priceInfo = getPriceAndCurrency(120);
+    if (index === 2) priceInfo = getPriceAndCurrency(250);
+
     return {
       icon: iconComponent,
       popular: popularStatus,
-      data: planData
+      data: { ...planData, ...priceInfo }
     };
   });
 

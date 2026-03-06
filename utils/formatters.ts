@@ -55,3 +55,18 @@ export const maskPhone = (value: string): string => {
   // Formato: (XX)XXXXXXXXX
   return `(${digitsOnly.slice(0, 2)})${digitsOnly.slice(2)}`;
 };
+
+export const formatCurrency = (amount: string | number, currency: 'USD' | 'BRL' | 'EUR') => {
+    const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    
+    // Fallback for environments where Intl might not be fully supported or for invalid values
+    if (isNaN(numericAmount)) {
+      return `${currency} ${amount}`;
+    }
+  
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+    }).format(numericAmount);
+  };
+  

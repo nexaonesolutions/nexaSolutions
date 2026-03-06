@@ -8,7 +8,7 @@ import { API_URL } from '@/utils/apiConfig';
 import { db } from '../../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-const VITE_STRIPE_PUBLIC_KEY = (import.meta as any).env.VITE_STRIPE_PUBLIC_KEY;
+const VITE_STRIPE_PUBLIC_KEY = (import.meta as any).env.VITE_STRIPE_PUBLIC_KEY || "pk_live_51Sc2xoFPwaZldxIn3aZwNxuSf5cdfulsOBO60IO8mFCzOGqzyTcuvapJdAvFiwTPJ2vW7m0KO2qSSDO9zCdl6ZeC00gg2WDHd6";
 
 if (!VITE_STRIPE_PUBLIC_KEY) {
   console.error('FATAL ERROR: VITE_STRIPE_PUBLIC_KEY is not defined. Stripe payments will not be available. Please set this environment variable.');

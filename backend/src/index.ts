@@ -33,10 +33,14 @@ app.use(express.json());
 // Main Rate Limiter
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes'
+  max: 1000, // Increased for development/testing
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  handler: (req, res, _next, options) => {
+    console.warn(`[${new Date().toLocaleTimeString()}] RATE LIMIT HIT: ${req.ip} -> ${req.method} ${req.url}`);
+    res.status(options.statusCode).send(options.message);
+  }
 });
-app.use('/api/', apiLimiter);
+// app.use('/api/', apiLimiter); // Temporarily disabled for production rollout debugging
 
 // Logger Middleware: Mostra no terminal toda requisição que chega
 app.use((req: Request, res: Response, next: NextFunction) => {

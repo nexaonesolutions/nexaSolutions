@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, ChevronLeft, CreditCard, QrCode, ChevronDown } from 'lucide-react';
+import { ShieldCheck, ChevronLeft, CreditCard, ChevronDown } from 'lucide-react';
 import StripePaymentForm from './StripePaymentForm';
-import StripePixPayment from './StripePixPayment';
 import { useAuth } from '../contexts/AuthContext';
 import ProjectBriefingModal from '../../../ProjectBriefingModal';
 import { API_URL } from '../../../utils/apiConfig';
 
-type PaymentMethod = 'card' | 'pix';
+// type PaymentMethod = 'card' | 'pix'; // Removed Pix
 
 const PaymentPage: React.FC = () => {
     const location = useLocation();
@@ -27,7 +26,7 @@ const PaymentPage: React.FC = () => {
         return saved ? JSON.parse(saved) : null;
     });
 
-    const [activeTab, setActiveTab] = useState<PaymentMethod>('card');
+    // const [activeTab, setActiveTab] = useState<PaymentMethod>('card'); // Tab logic removed
     const [isSummaryOpen, setIsSummaryOpen] = useState(true);
     const [briefingData, setBriefingData] = useState<any>(() => {
         const saved = sessionStorage.getItem('nexa_submitted_briefing');
@@ -83,14 +82,7 @@ const PaymentPage: React.FC = () => {
     };
 
     const renderPaymentMethod = () => {
-        switch (activeTab) {
-            case 'card':
-                return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} />;
-            case 'pix':
-                return <StripePixPayment amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} />;
-            default:
-                return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} />;
-        }
+        return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} />;
     }
 
     const handleSubscribeMaintenance = async () => {
@@ -184,14 +176,9 @@ const PaymentPage: React.FC = () => {
                         <h1 className="text-2xl sm:text-3xl font-bold mb-8">Efetue o Pagamento</h1>
                         <div className={`bg-nexa-card/40 border border-gray-800 rounded-2xl p-6 sm:p-8 ${showBriefing ? 'opacity-50 pointer-events-none' : ''}`}>
                             <div className="flex mb-8 border-b border-gray-700">
-                                <button onClick={() => setActiveTab('card')} className={`flex-1 p-4 text-center font-semibold flex items-center justify-center gap-2 ${activeTab === 'card' ? 'text-nexa-primary border-b-2 border-nexa-primary' : 'text-gray-400'}`}>
-                                    <CreditCard size={20} /> Cartão
-                                </button>
-                                {isBRL && (
-                                    <button onClick={() => setActiveTab('pix')} className={`flex-1 p-4 text-center font-semibold flex items-center justify-center gap-2 ${activeTab === 'pix' ? 'text-nexa-primary border-b-2 border-nexa-primary' : 'text-gray-400'}`}>
-                                        <QrCode size={20} /> PIX
-                                    </button>
-                                )}
+                                <div className="flex-1 p-4 text-center font-semibold flex items-center justify-center gap-2 text-nexa-primary border-b-2 border-nexa-primary">
+                                    <CreditCard size={20} /> Pagamento Seguro
+                                </div>
                             </div>
                             {!showBriefing && renderPaymentMethod()}
                         </div>

@@ -10,6 +10,10 @@ if (!STRIPE_SECRET_KEY) {
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
+if (stripe) {
+  console.log(`[Stripe Config] Secret Key loaded: ${STRIPE_SECRET_KEY?.substring(0, 7)}... (Mode: ${STRIPE_SECRET_KEY?.startsWith('sk_live') ? 'LIVE' : 'TEST'})`);
+}
+
 // Mercado Pago integration removed; Stripe handles payments now.
 
 export const createStripePaymentIntent = async (req: Request, res: Response) => {
@@ -18,6 +22,7 @@ export const createStripePaymentIntent = async (req: Request, res: Response) => 
   }
 
   const { amount, currency, orderId, metadata, briefing, userId, mainPlan, maintenancePlan, clientName, clientEmail, payment_method_types } = req.body;
+  console.log(`[Stripe] Creating PaymentIntent: ${amount} ${currency} for order ${orderId}`, { payment_method_types });
 
   if (!amount || amount <= 0 || !currency) {
     return res.status(400).json({ error: 'Invalid amount or currency for payment.' });
@@ -32,13 +37,7 @@ export const createStripePaymentIntent = async (req: Request, res: Response) => 
       }
     };
 
-    // Se o frontend pedir métodos específicos (ex: Pix no componente customizado), usamos eles.
-    // Caso contrário, usamos os métodos automáticos do painel Stripe.
-    if (payment_method_types && Array.isArray(payment_method_types) && payment_method_types.length > 0) {
-      paymentIntentParams.payment_method_types = payment_method_types;
-    } else {
-      paymentIntentParams.automatic_payment_methods = { enabled: true };
-    }
+    paymentIntentParams.automatic_payment_methods = { enabled: true };
 
     const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
 
@@ -77,8 +76,14 @@ export const createStripePaymentIntent = async (req: Request, res: Response) => 
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error: any) {
-    console.error(`Error creating Stripe payment intent for ${currency}:`, error);
-    res.status(500).json({ error: error.message });
+    console.error(`[Stripe Error] createStripePaymentIntent:`, {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      param: error.param,
+      detail: error
+    });
+    res.status(500).json({ error: error.message || 'Erro interno ao criar intenção de pagamento.' });
   }
 };
 
@@ -105,6 +110,7 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
   }
 
   const { amount, currency, orderId, metadata, userId, maintenancePlan, mainPlan } = req.body;
+  console.log(`[Stripe] Creating Subscription: ${amount} ${currency} for order ${orderId}`, { maintenancePlanName: maintenancePlan?.name, mainPlanName: mainPlan?.name });
 
   if (!amount || amount <= 0 || !currency) {
     return res.status(400).json({ error: 'Invalid amount or currency for subscription.' });
@@ -207,7 +213,12 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
 
     res.json({ url: session.url });
   } catch (error: any) {
-    console.error(`Error creating Stripe subscription for ${currency}:`, error);
-    res.status(500).json({ error: error.message });
+    console.error(`[Stripe Error] createStripeSubscription:`, {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      detail: error
+    });
+    res.status(500).json({ error: error.message || 'Erro interno ao criar assinatura.' });
   }
 };

@@ -77,7 +77,7 @@ h1 {
 
 /* Helper to visually constrain very large backdrops on small screens */
 @media (max-width: 420px) {
-  .blur-[12px] { filter: blur(72px); }
+  .blur-\[12px\] { filter: blur(72px); }
 }
 .transform-style-3d {
   transform-style: preserve-3d;

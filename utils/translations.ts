@@ -208,6 +208,9 @@ export const translations = {
       'passwordsMismatch': 'As senhas não coincidem.',
       'registrationSuccess': 'Cadastro realizado com sucesso! Redirecionando para o login...',
       'registrationFailed': 'Não foi possível realizar o cadastro. Verifique seus dados.',
+      'emailAlreadyInUse': 'Este e-mail já está em uso por outra conta.',
+      'loginAction': 'Fazer Login',
+      'resetPasswordAction': 'Redefinir Senha',
       'networkError': 'Ocorreu um erro de rede. Tente novamente.',
       'loginFailed': 'E-mail ou senha inválidos.',
       'name': 'Nome Completo',
@@ -521,6 +524,9 @@ export const translations = {
       'passwordsMismatch': 'Passwords do not match.',
       'registrationSuccess': 'Registration successful! Redirecting to login...',
       'registrationFailed': 'Registration failed. Please try again.',
+      'emailAlreadyInUse': 'This email is already in use by another account.',
+      'loginAction': 'Login Now',
+      'resetPasswordAction': 'Reset Password',
       'networkError': 'Network error. Please check your connection.',
       'name': 'Full Name',
       'cpf': 'CPF',
@@ -992,7 +998,7 @@ export const translations = {
       'order_details': 'Detalhes do Pedido',
       'invoice_btn': 'Ver Fatura'
     }
-    },
+  },
   'es': {
     'loading': 'Cargando...',
     'features': {
@@ -1332,9 +1338,9 @@ export const translations = {
       'order_details': 'Detalles del Pedido',
       'invoice_btn': 'Ver Factura'
     }
-    }
   }
-;
+}
+  ;
 
 
 // Alias para que 'pt' genérico use as traduções de 'pt-PT'.

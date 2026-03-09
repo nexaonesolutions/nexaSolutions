@@ -22,17 +22,17 @@ const Register: React.FC = () => {
   const formatCpf = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length <= 3) return digits;
-    if (digits.length <= 6) return `${digits.slice(0,3)}.${digits.slice(3)}`;
-    if (digits.length <= 9) return `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6)}`;
-    return `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6,9)}-${digits.slice(9)}`;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
   };
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
     if (digits.length <= 2) return `(${digits}`;
-    if (digits.length <= 6) return `(${digits.slice(0,2)}) ${digits.slice(2)}`;
-    if (digits.length <= 10) return `(${digits.slice(0,2)}) ${digits.slice(2,6)}-${digits.slice(6)}`;
-    return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,8 +58,8 @@ const Register: React.FC = () => {
         setError(t('auth.registrationFailed'));
       }
     } catch (err: any) {
-        // The error 'err' is thrown from AuthContext, and its message is the one from the backend.
-        setError(err.message || t('auth.networkError'));
+      // The error 'err' is thrown from AuthContext, and its message is the one from the backend.
+      setError(err.message || t('auth.networkError'));
     }
   };
 
@@ -190,8 +190,24 @@ const Register: React.FC = () => {
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center mt-4">
-              {error}
+            <div className="text-red-500 text-sm text-center mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-shake">
+              <p>{t(error)}</p>
+              {error === 'auth.emailAlreadyInUse' && (
+                <div className="mt-4 flex flex-col space-y-2">
+                  <Link
+                    to="/login"
+                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-xs font-bold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary transition-all"
+                  >
+                    {t('auth.loginAction')}
+                  </Link>
+                  <Link
+                    to="/esqueci-senha"
+                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-600 text-xs font-bold rounded-md text-white hover:bg-gray-700 transition-all"
+                  >
+                    {t('auth.resetPasswordAction')}
+                  </Link>
+                </div>
+              )}
             </div>
           )}
           {success && (

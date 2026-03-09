@@ -360,7 +360,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return userCredential.user;
     } catch (err: any) {
       let msg = "Erro ao registrar usuário.";
-      if (err.code === 'auth/email-already-in-use') msg = "Este email já está em uso.";
+      if (err.code === 'auth/email-already-in-use') {
+        msg = "auth.emailAlreadyInUse";
+      }
       setError(msg);
       throw new Error(msg);
     } finally {

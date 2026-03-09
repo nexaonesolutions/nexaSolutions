@@ -57,4 +57,13 @@ window.addEventListener('error', (event) => {
     // eslint-disable-next-line no-console
     console.error('[Global] Uncaught error:', event.error || event.message || event);
   } catch (e) { }
-});
+}, true); // Use capture phase
+
+// Backup handler for older/specific syntax errors
+window.onerror = function (msg, url) {
+  if (typeof msg === 'string' && (msg.includes('webpage_content_reporter.js') || (url && url.includes('chrome-extension')))) {
+    console.warn('[Global] Silenciado erro de sintaxe de extensão via backup handler.');
+    return true; // Prevents default error firing
+  }
+  return false;
+};

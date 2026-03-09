@@ -1,105 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NEXA | Landing Pages de Alta Conversão</title>
-    <meta name="description" content="Transforme sua presença online com a Nexa. Landing pages profissionais que convertem.">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://nexasolutions.store/">
-    <meta property="og:title" content="NEXA | Landing Pages de Alta Conversão">
-    <meta property="og:description" content="Transforme sua presença online com a Nexa. Engenharia de design para negócios exponenciais.">
-    <meta property="og:image" content="https://nexasolutions.store/og-image.png">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXA | Landing Pages de Alta Conversão</title>
+  <meta name="description"
+    content="Transforme sua presença online com a Nexa. Landing pages profissionais que convertem.">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://nexasolutions.store/">
-    <meta property="twitter:title" content="NEXA | Landing Pages de Alta Conversão">
-    <meta property="twitter:description" content="Transforme sua presença online com a Nexa. Engenharia de design para negócios exponenciais.">
-    <meta property="twitter:image" content="https://nexasolutions.store/og-image.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-      html {
-        scroll-behavior: smooth;
-        scroll-padding-top: 80px;
-        -webkit-font-smoothing:antialiased;
-        -moz-osx-font-smoothing:grayscale;
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nexasolutions.store/">
+  <meta property="og:title" content="NEXA | Landing Pages de Alta Conversão">
+  <meta property="og:description"
+    content="Transforme sua presença online com a Nexa. Engenharia de design para negócios exponenciais.">
+  <meta property="og:image" content="https://nexasolutions.store/og-image.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://nexasolutions.store/">
+  <meta property="twitter:title" content="NEXA | Landing Pages de Alta Conversão">
+  <meta property="twitter:description"
+    content="Transforme sua presença online com a Nexa. Engenharia de design para negócios exponenciais.">
+  <meta property="twitter:image" content="https://nexasolutions.store/og-image.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html,
+    body,
+    #root {
+      height: 100%;
+    }
+
+    body {
+      background-color: rgb(var(--color-dark));
+      color: #ffffff;
+      /* ou uma variável se preferir */
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .pb-safe-area {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    }
+
+    button,
+    a[href],
+    input,
+    textarea,
+    select {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    h1 {
+      font-weight: 800;
+      line-height: 1.03;
+      font-size: clamp(1.75rem, 3.8vw + 0.6rem, 3.75rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
       }
-      html,body,#root{height:100%;}
-      body {
-        background-color: rgb(var(--color-dark));
-        color: #ffffff; /* ou uma variável se preferir */
-        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-        -webkit-font-smoothing:antialiased;
-        -moz-osx-font-smoothing:grayscale;
-        -webkit-text-size-adjust:100%;
+    }
+
+    @media (max-width: 420px) {
+      .blur-\[128px\] {
+        filter: blur(72px);
       }
-      img, video { max-width:100%; height:auto; display:block; }
-      .pb-safe-area { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem); }
-      button, a[href], input, textarea, select { -webkit-tap-highlight-color: rgba(0,0,0,0); }
-      h1 {
-        font-weight: 800;
-        line-height: 1.03;
-        font-size: clamp(1.75rem, 3.8vw + 0.6rem, 3.75rem);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-      }
-      @media (max-width: 420px) {
-        .blur-\[128px\] { filter: blur(72px); }
-      }
-      :root {
-        --color-primary: 34 211 238; /* cyan-400 */
-        --color-secondary: 139 92 246; /* violet-500 */
-        --color-accent: 56 189 248; /* sky-400 */
-        --color-dark: 3 7 18; /* slate-950 */
-        --color-card: 15 23 42; /* slate-900 */
-      }
-      .theme-cyber {
-        --color-primary: 234 179 8; /* yellow-400 */
-        --color-secondary: 236 72 153; /* pink-500 */
-        --color-accent: 249 115 22; /* orange-500 */
-        --color-dark: 23 23 23; /* neutral-900 */
-        --color-card: 38 38 38; /* neutral-800 */
-      }
-      .glass-effect {
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transform: translateZ(0); /* Hint for hardware acceleration */
-        -webkit-transform: translateZ(0); /* For WebKit browsers */
-      }
-      .gradient-text {
-        background: linear-gradient(to right, #22d3ee, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      /* Custom Scrollbar for tables */
-      .custom-scrollbar::-webkit-scrollbar {
-        height: 8px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #0f172a;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 4px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-    </style>
+    }
+
+    :root {
+      --color-primary: 34 211 238;
+      /* cyan-400 */
+      --color-secondary: 139 92 246;
+      /* violet-500 */
+      --color-accent: 56 189 248;
+      /* sky-400 */
+      --color-dark: 3 7 18;
+      /* slate-950 */
+      --color-card: 15 23 42;
+      /* slate-900 */
+    }
+
+    .theme-cyber {
+      --color-primary: 234 179 8;
+      /* yellow-400 */
+      --color-secondary: 236 72 153;
+      /* pink-500 */
+      --color-accent: 249 115 22;
+      /* orange-500 */
+      --color-dark: 23 23 23;
+      /* neutral-900 */
+      --color-card: 38 38 38;
+      /* neutral-800 */
+    }
+
+    .glass-effect {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transform: translateZ(0);
+      /* Hint for hardware acceleration */
+      -webkit-transform: translateZ(0);
+      /* For WebKit browsers */
+    }
+
+    .gradient-text {
+      background: linear-gradient(to right, #22d3ee, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Custom Scrollbar for tables */
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div id="root"></div>
   <script type="module" src="/src/index.tsx"></script>
 </body>
+
 </html>

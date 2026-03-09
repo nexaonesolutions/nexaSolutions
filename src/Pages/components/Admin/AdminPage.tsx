@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 
 import { API_URL } from '@/utils/apiConfig';
+import { hapticFeedback } from '@/utils/haptics';
 
 interface Stats {
   totalOrders: number;
@@ -127,6 +128,21 @@ const AdminPage: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Dynamic viewport height for mobile keyboards
+  useEffect(() => {
+    const updateHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+    };
+  }, []);
   const prevMessageCountRef = useRef<number>(0);
   const prevNotifCountRef = useRef<number>(0);
 
@@ -425,6 +441,7 @@ const AdminPage: React.FC = () => {
         text: newMsg.trim(),
         timestamp: serverTimestamp()
       });
+      hapticFeedback.light();
       setNewMsg('');
       if (chatEndRef.current) {
         chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -908,7 +925,7 @@ const AdminPage: React.FC = () => {
           )}
 
           {activeTab === 'chat' && (
-            <div className="flex-1 w-full h-full flex flex-col md:flex-row bg-[#0b141a] overflow-hidden text-white font-sans rounded-bl-3xl">
+            <div className="flex-1 w-full h-full flex flex-col md:flex-row bg-[#0b141a] overflow-hidden text-white font-sans rounded-bl-3xl relative">
               {/* Chat Sidebar */}
               <div className={`w-full md:w-[350px] lg:w-[400px] border-b md:border-b-0 md:border-r border-white/5 flex flex-col bg-gray-950 ${selectedConvo ? 'hidden md:flex' : 'flex'} shrink-0 z-10 shadow-2xl shadow-black/50`}>
                 <div className="h-20 px-6 bg-gray-900 border-b border-white/5 flex items-center justify-between shrink-0">
@@ -971,9 +988,12 @@ const AdminPage: React.FC = () => {
               </div>
 
               {/* Chat Area */}
-              <div className={`flex-1 flex flex-col bg-gray-950 relative ${!selectedConvo ? 'hidden md:flex' : 'flex'} z-0`}>
+              <div
+                className={`flex-1 flex flex-col bg-gray-950 relative ${!selectedConvo ? 'hidden md:flex' : 'flex'} z-0 overflow-hidden`}
+                style={{ height: activeTab === 'chat' ? 'calc(var(--vh, 1vh) * 100 - 64px - (window.innerWidth < 768 ? 56px : 0px))' : 'auto' }}
+              >
                 {/* Nexa Chat Background Pattern (Cubes) */}
-                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
+                <div className="absolute inset-0 z-[-1] opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
                 {selectedConvo ? (
                   <>
                     {/* Chat Header */}
@@ -1018,40 +1038,45 @@ const AdminPage: React.FC = () => {
                         const isFirstInSequence = index === 0 || convoMessages[index - 1].sender !== msg.sender;
 
                         return (
-                          <div key={msg.id} className={`flex ${isNexa ? 'justify-end' : 'justify-start'} w-full animate-in slide-in-from-bottom-2 duration-300`}>
+                          <div key={msg.id} className={`flex ${isNexa ? 'justify-end' : 'justify-start'} w-full mb-1 group`}>
                             <div
-                              className={`relative max-w-[85%] md:max-w-[70%] px-4 py-3 rounded-2xl text-[14.5px] leading-relaxed flex flex-col shadow-lg
+                              className={`relative max-w-[85%] md:max-w-[70%] px-3 pt-2 pb-1.5 rounded-xl text-[14.5px] leading-[1.4] flex flex-col shadow-sm
                                 ${isNexa
-                                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 text-gray-100 rounded-tr-sm border border-white/5 backdrop-blur-md'
-                                  : 'bg-gradient-to-br from-cyan-600 to-blue-700 text-white rounded-tl-sm border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]'}
-                                ${!isFirstInSequence ? (isNexa ? 'rounded-tr-2xl mt-1' : 'rounded-tl-2xl mt-1') : 'mt-4'}
+                                  ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none'
+                                  : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}
+                                ${!isFirstInSequence ? (isNexa ? 'rounded-tr-xl' : 'rounded-tl-xl') : ''}
                               `}
                             >
-                              <div className="pr-12 md:pr-14">
-                                {msg.text}
-                              </div>
-                              <div className="absolute bottom-1.5 right-3 flex items-center gap-1.5">
-                                <span className={`text-[10px] font-medium ${isNexa ? 'text-gray-400' : 'text-cyan-100/70'}`}>
-                                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              <div className="flex flex-wrap items-end justify-end gap-x-2 gap-y-1">
+                                <span className="flex-1 min-w-[50px] whitespace-pre-wrap break-words pb-0.5">
+                                  {msg.text}
                                 </span>
-                                {isNexa && (
-                                  <div className="flex">
-                                    {msg.readByClient ? (
-                                      <div className="flex -space-x-1">
-                                        <svg viewBox="0 0 16 11" height="11" width="16" className="text-cyan-400 drop-shadow-[0_0_2px_rgba(6,182,212,0.8)]" fill="currentColor">
+                                <div className="flex items-center gap-1 shrink-0 self-end mb-[-2px]">
+                                  <span className="text-[10px] text-[#8696a0] font-normal leading-none">
+                                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                  {isNexa && (
+                                    <div className="flex shrink-0">
+                                      {msg.readByClient ? (
+                                        <svg viewBox="0 0 16 11" height="11" width="16" className="text-[#53bdeb]" fill="currentColor">
                                           <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
                                           <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
                                         </svg>
-                                      </div>
-                                    ) : (
-                                      <svg viewBox="0 0 16 11" height="11" width="16" className="text-gray-500" fill="currentColor">
-                                        <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                        <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
-                                      </svg>
-                                    )}
-                                  </div>
-                                )}
+                                      ) : (
+                                        <svg viewBox="0 0 16 11" height="11" width="16" className="text-[#8696a0]" fill="currentColor">
+                                          <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                          <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
+                              {isFirstInSequence && (
+                                <div className={`absolute top-0 w-2 h-3 overflow-hidden ${isNexa ? '-right-1.5' : '-left-1.5'}`}>
+                                  <div className={`w-3 h-3 rotate-45 transform ${isNexa ? 'bg-[#005c4b]' : 'bg-[#202c33]'}`} />
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -1059,10 +1084,9 @@ const AdminPage: React.FC = () => {
                       <div ref={chatEndRef} className="h-4" />
                     </div>
 
-                    {/* Chat Footer / Input Area */}
                     <form
                       onSubmit={(e) => { e.preventDefault(); sendNexaMessage(selectedConvo.orderId); }}
-                      className="p-4 bg-gray-900/90 backdrop-blur-xl border-t border-white/5 z-10 shrink-0"
+                      className="p-4 bg-gray-900/95 backdrop-blur-xl border-t border-white/5 z-20 shrink-0 sticky bottom-0"
                     >
                       <div className="flex bg-gray-950 border border-white/10 rounded-full items-center p-1.5 shadow-inner">
                         <input

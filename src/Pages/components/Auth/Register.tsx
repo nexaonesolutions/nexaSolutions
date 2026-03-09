@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // Replaced `react-input-mask` because it calls legacy `findDOMNode` which
 // is not available in the React client renderer used here. We apply
@@ -15,9 +15,19 @@ const Register: React.FC = () => {
   const [phone, setPhone] = useState<string>(''); // New state for phone
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { register, isLoading } = useAuth();
+  const { register, isLoading, user, isProfileLoaded } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  // Robust redirection logic using useEffect
+  useEffect(() => {
+    if (isProfileLoaded && user) {
+      // If registration was just successful, we might want to go to /login or /
+      // But usually, AuthContext auto-logs in after register.
+      // Let's redirect to home (or profile) once loaded.
+      navigate('/', { replace: true });
+    }
+  }, [user, isProfileLoaded, navigate]);
 
   const formatCpf = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -47,16 +57,9 @@ const Register: React.FC = () => {
 
     try {
       // Pass new fields to the register function in the correct order
-      const registrationSuccess = await register(name, email, password, cpf, phone);
-      if (registrationSuccess) {
-        setSuccess(t('auth.registrationSuccess'));
-        setTimeout(() => {
-          navigate('/login'); // Redirect to login after successful registration
-        }, 2000);
-      } else {
-        // This 'else' block might not be reached if register always throws on error
-        setError(t('auth.registrationFailed'));
-      }
+      await register(name, email, password, cpf, phone);
+      setSuccess(t('auth.registrationSuccess'));
+      // Redirection is now handled by the useEffect above
     } catch (err: any) {
       // The error 'err' is thrown from AuthContext, and its message is the one from the backend.
       setError(err.message || t('auth.networkError'));

@@ -70,6 +70,7 @@ interface AuthContextType {
   updateProfile: (data: { name: string; email: string; phone: string; cpf: string; }) => Promise<boolean>;
   changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>; // Handled via email in Firebase usually, but can be done
   loadUser: () => Promise<void>;
+  isProfileLoaded: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -97,6 +98,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isProfileLoaded, setIsProfileLoaded] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingOrder, setPendingOrder] = useState<PendingOrder | null>(null);
@@ -107,6 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
+      setIsProfileLoaded(false);
       if (firebaseUser) {
         const isNexaAdmin = firebaseUser.email === 'nexa2114@gmail.com';
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
@@ -132,10 +135,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         const userToken = await firebaseUser.getIdToken();
         setToken(userToken);
-        // User loaded successfully
+        setIsProfileLoaded(true);
       } else {
         setUser(null);
         setToken(null);
+        setIsProfileLoaded(true); // Technically loaded (as null)
       }
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
@@ -385,6 +389,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile,
     changePassword,
     loadUser,
+    isProfileLoaded,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

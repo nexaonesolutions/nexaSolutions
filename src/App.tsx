@@ -61,25 +61,53 @@ const AppContent: React.FC = () => {
       {!isPaymentPage && !isAdminPage && <Navbar onAboutUsClick={() => setIsAboutUsOpen(true)} />}
       <main className={`flex-grow ${isAdminPage ? '' : 'pb-16'}`}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/planos" element={<PlansPage />} />
-          <Route path="/manutencao" element={<MaintenancePage />} />
-          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <HomePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/planos" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <PlansPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/manutencao" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <MaintenancePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/portfolio" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <PortfolioPage />
+            </ProtectedRoute>
+          } />
           <Route path="/pagamento" element={
-            <ProtectedRoute>
+            <ProtectedRoute clientOnly>
               <PaymentPage />
             </ProtectedRoute>
           } />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/cadastro" element={<RegisterPage />} />
-          <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+          <Route path="/login" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <LoginPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/cadastro" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <RegisterPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/esqueci-senha" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <ForgotPasswordPage />
+            </ProtectedRoute>
+          } />
           <Route path="/perfil" element={
-            <ProtectedRoute>
+            <ProtectedRoute clientOnly>
               <ProfilePage />
             </ProtectedRoute>
           } />
           <Route path="/perfil/editar" element={
-            <ProtectedRoute>
+            <ProtectedRoute clientOnly>
               <ProfilePanel />
             </ProtectedRoute>
           } />
@@ -88,7 +116,11 @@ const AppContent: React.FC = () => {
               <AdminPage />
             </ProtectedRoute>
           } />
-          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/success" element={
+            <ProtectedRoute clientOnly allowGuest>
+              <SuccessPage />
+            </ProtectedRoute>
+          } />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

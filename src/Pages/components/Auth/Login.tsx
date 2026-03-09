@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -10,10 +10,29 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false); // Added loading state
-  const { login, pendingOrder, setPendingOrder } = useAuth();
+  const { login, pendingOrder, setPendingOrder, user, isProfileLoaded } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
+
+  // Robust redirection logic using useEffect
+  useEffect(() => {
+    if (isProfileLoaded && user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else if (pendingOrder) {
+        navigate('/pagamento', { state: pendingOrder, replace: true });
+        setPendingOrder(null);
+      } else {
+        const from = location.state?.from;
+        if (from) {
+          navigate(from.pathname, { state: from.state, replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
+      }
+    }
+  }, [user, isProfileLoaded, pendingOrder, navigate, location, setPendingOrder]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,22 +56,8 @@ const Login: React.FC = () => {
         return;
       }
 
-      const user = await login(trimmedEmail, trimmedPassword, rememberMe);
-      if (user && user.role === 'admin') {
-        navigate('/admin', { replace: true });
-        return;
-      }
-      if (pendingOrder) {
-        navigate('/pagamento', { state: pendingOrder, replace: true });
-        setPendingOrder(null);
-      } else {
-        const from = location.state?.from;
-        if (from) {
-          navigate(from.pathname, { state: from.state, replace: true });
-        } else {
-          navigate('/', { replace: true });
-        }
-      }
+      await login(trimmedEmail, trimmedPassword, rememberMe);
+      // Redirection is now handled by the useEffect above
     } catch (err: any) {
       // Prefer server-provided message when available. Map to translation key when possible.
       const serverMessage: string | null = err?.message || null;

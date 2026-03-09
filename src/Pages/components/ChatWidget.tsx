@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '@/utils/apiConfig';
 import { db } from '../../firebase';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { hapticFeedback } from '@/utils/haptics';
 
 interface ChatMessage {
     id: string;
@@ -38,6 +39,21 @@ const ChatWidget: React.FC = () => {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Dynamic viewport height for mobile keyboards
+    useEffect(() => {
+        const updateHeight = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        window.addEventListener('orientationchange', updateHeight);
+        return () => {
+            window.removeEventListener('resize', updateHeight);
+            window.removeEventListener('orientationchange', updateHeight);
+        };
+    }, []);
 
     // Initial load: Fetch orders from API to know which chats to listen to
     useEffect(() => {
@@ -206,6 +222,7 @@ const ChatWidget: React.FC = () => {
                 text: newMessage.trim(),
                 timestamp: serverTimestamp()
             });
+            hapticFeedback.light();
             setNewMessage('');
             inputRef.current?.focus();
         } catch (err) {
@@ -257,7 +274,8 @@ const ChatWidget: React.FC = () => {
             {/* Chat Panel */}
             {isOpen && (
                 <div
-                    className="fixed bottom-20 right-4 z-[999] w-[92%] sm:w-[380px] h-[80vh] sm:h-[600px] flex flex-col rounded-2xl overflow-hidden shadow-2xl shadow-cyan-500/20 border border-white/10 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 bg-gray-950/95 backdrop-blur-xl font-sans"
+                    className="fixed bottom-0 sm:bottom-20 right-0 sm:right-4 z-[999] w-full sm:w-[400px] h-full sm:h-[600px] flex flex-col sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border-0 sm:border sm:border-white/10 bg-[#0b141a] font-sans"
+                    style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
                 >
                     {/* Premium Chat Background Pattern */}
                     <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
@@ -343,41 +361,48 @@ const ChatWidget: React.FC = () => {
                                 const isFirstInSequence = index === 0 || filteredMessages[index - 1].sender !== msg.sender;
 
                                 return (
-                                    <div key={msg.id} className={`flex ${isClient ? 'justify-end' : 'justify-start'} w-full animate-in slide-in-from-bottom-2 duration-300`}>
+                                    <div key={msg.id} className={`flex ${isClient ? 'justify-end' : 'justify-start'} w-full mb-1 group`}>
                                         <div
-                                            className={`relative max-w-[85%] px-4 py-3 rounded-2xl text-[14.5px] leading-relaxed flex flex-col shadow-lg
+                                            className={`relative max-w-[85%] px-3 pt-2 pb-1.5 rounded-xl text-[14.5px] leading-[1.4] flex flex-col shadow-sm
                                                 ${isClient
-                                                    ? 'bg-gradient-to-br from-cyan-600 to-blue-700 text-white rounded-tr-sm border border-cyan-500/30 shadow-cyan-900/20'
-                                                    : 'bg-gray-800/90 text-gray-100 rounded-tl-sm border border-white/5 shadow-black/40 backdrop-blur-md'}
-                                                ${!isFirstInSequence ? (isClient ? 'rounded-tr-2xl mt-1' : 'rounded-tl-2xl mt-1') : 'mt-4'}
+                                                    ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none'
+                                                    : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}
+                                                ${!isFirstInSequence ? (isClient ? 'rounded-tr-xl' : 'rounded-tl-xl') : ''}
                                             `}
                                         >
-                                            <div className="pr-12">
-                                                {msg.text}
-                                            </div>
-
-                                            <div className="absolute bottom-1.5 right-3 flex items-center gap-1.5">
-                                                <span className={`text-[10px] font-medium ${isClient ? 'text-cyan-100/70' : 'text-gray-400'}`}>
-                                                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {/* Message text with inline-block for wrapping support with the timestamp */}
+                                            <div className="flex flex-wrap items-end justify-end gap-x-2 gap-y-1">
+                                                <span className="flex-1 min-w-[50px] whitespace-pre-wrap break-words pb-0.5">
+                                                    {msg.text}
                                                 </span>
-                                                {isClient && (
-                                                    <div className="flex">
-                                                        {msg.readByAdmin ? (
-                                                            <div className="flex -space-x-1">
-                                                                <svg viewBox="0 0 16 11" height="11" width="16" className="text-cyan-300 drop-shadow-[0_0_2px_rgba(6,182,212,0.8)]" fill="currentColor">
+                                                <div className="flex items-center gap-1 shrink-0 self-end mb-[-2px]">
+                                                    <span className="text-[10px] text-[#8696a0] font-normal leading-none">
+                                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                    {isClient && (
+                                                        <div className="flex shrink-0">
+                                                            {msg.readByAdmin ? (
+                                                                <svg viewBox="0 0 16 11" height="11" width="16" className="text-[#53bdeb]" fill="currentColor">
                                                                     <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
                                                                     <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
                                                                 </svg>
-                                                            </div>
-                                                        ) : (
-                                                            <svg viewBox="0 0 16 11" height="11" width="16" className="text-cyan-100/50" fill="currentColor">
-                                                                <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                                                <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                            ) : (
+                                                                <svg viewBox="0 0 16 11" height="11" width="16" className="text-[#8696a0]" fill="currentColor">
+                                                                    <path d="M11.854 1.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L4.5 7.793l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                                                    <path d="M15.854 1.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708 0 .5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z" />
+                                                                </svg>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
+
+                                            {/* WhatsApp-like tail for the first message in a group */}
+                                            {isFirstInSequence && (
+                                                <div className={`absolute top-0 w-2 h-3 overflow-hidden ${isClient ? '-right-1.5' : '-left-1.5'}`}>
+                                                    <div className={`w-3 h-3 rotate-45 transform ${isClient ? 'bg-[#005c4b]' : 'bg-[#202c33]'}`} />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 );

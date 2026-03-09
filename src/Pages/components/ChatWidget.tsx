@@ -234,8 +234,8 @@ const ChatWidget: React.FC = () => {
         }
     };
 
-    // Only show if orders exist
-    if (activeOrderIds.length === 0 || !user) return null;
+    // If not authenticated, hide widget completely
+    if (!user) return null;
 
     const filteredMessages = selectedOrderId
         ? messages.filter(m => m.orderId === selectedOrderId)
@@ -314,7 +314,22 @@ const ChatWidget: React.FC = () => {
 
                     {/* Messages */}
                     <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar relative z-10">
-                        {filteredMessages.length === 0 ? (
+                        {activeOrderIds.length === 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-center px-6">
+                                <div className="p-5 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+                                    <MessageCircle size={36} strokeWidth={1.5} />
+                                </div>
+                                <p className="text-white font-bold text-lg tracking-wide mb-2">Você ainda não possui projetos</p>
+                                <p className="text-sm text-gray-400 leading-relaxed mb-6">A Central de Projetos é exclusiva para acompanhamento de desenvolvimento. Adquira um plano para começar.</p>
+                                <a
+                                    href="#/planos"
+                                    onClick={() => setIsOpen(false)}
+                                    className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-sm"
+                                >
+                                    Ver Nossos Planos
+                                </a>
+                            </div>
+                        ) : filteredMessages.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center px-6">
                                 <div className="p-5 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                                     <MessageCircle size={36} strokeWidth={1.5} />
@@ -372,28 +387,30 @@ const ChatWidget: React.FC = () => {
                     </div>
 
                     {/* Input */}
-                    <div className="p-4 bg-gray-900/90 backdrop-blur-xl border-t border-white/5 z-10 shrink-0">
-                        <div className="flex bg-gray-950 border border-white/10 rounded-full items-center p-1.5 shadow-inner">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                placeholder="Escreva sua mensagem..."
-                                value={newMessage}
-                                onChange={handleTyping}
-                                onKeyDown={handleKeyDown}
-                                disabled={sending}
-                                className="w-full bg-transparent px-4 py-2 text-[14px] text-white placeholder:text-gray-500 focus:outline-none"
-                            />
-                            <button
-                                onClick={handleSend}
-                                disabled={!newMessage.trim() || sending}
-                                className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all ${newMessage.trim() ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30' : 'bg-white/5 text-gray-500'
-                                    }`}
-                            >
-                                <Send size={18} className={`${sending ? 'opacity-50' : ''} ml-0.5`} />
-                            </button>
+                    {activeOrderIds.length > 0 && (
+                        <div className="p-4 bg-gray-900/90 backdrop-blur-xl border-t border-white/5 z-10 shrink-0">
+                            <div className="flex bg-gray-950 border border-white/10 rounded-full items-center p-1.5 shadow-inner">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    placeholder="Escreva sua mensagem..."
+                                    value={newMessage}
+                                    onChange={handleTyping}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={sending}
+                                    className="w-full bg-transparent px-4 py-2 text-[14px] text-white placeholder:text-gray-500 focus:outline-none"
+                                />
+                                <button
+                                    onClick={handleSend}
+                                    disabled={!newMessage.trim() || sending}
+                                    className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all ${newMessage.trim() ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30' : 'bg-white/5 text-gray-500'
+                                        }`}
+                                >
+                                    <Send size={18} className={`${sending ? 'opacity-50' : ''} ml-0.5`} />
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
 

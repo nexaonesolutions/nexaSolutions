@@ -319,26 +319,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return userCredential.user;
     } catch (err: any) {
       console.error("Firebase Register Error:", err);
-      let msg = err.message || "Erro desconhecido ao registrar usuário.";
+      let msgKey = "auth.registrationFailed";
+      const errMsg = err.message || "";
 
-      if (msg === 'User already exists' || err.code === 'auth/email-already-in-use') {
-        msg = "Este e-mail já está em uso por outra conta.";
-      } else if (msg === 'CPF already in use') {
-        msg = "Este CPF já está associado a outra conta.";
-      } else if (msg === 'Phone already in use') {
-        msg = "Este número de telefone já está em uso.";
-      } else if (msg === 'Invalid CPF') {
-        msg = "CPF Inválido.";
-      } else if (msg === 'Invalid phone number format') {
-        msg = "Formato de telefone inválido.";
-      } else if (err.code === 'auth/weak-password') {
-        msg = "A senha deve ter pelo menos 6 caracteres.";
+      // Mapeamento de mensagens do Backend para chaves de tradução
+      if (errMsg === 'Email already in use' || errMsg === 'User already exists' || err.code === 'auth/email-already-in-use') {
+        msgKey = "auth.emailAlreadyInUse";
+      } else if (errMsg === 'CPF already in use') {
+        msgKey = "auth.cpfAlreadyInUse";
+      } else if (errMsg === 'Phone already in use') {
+        msgKey = "auth.phoneAlreadyInUse";
+      } else if (errMsg === 'Invalid CPF') {
+        msgKey = "auth.invalidCpf";
+      } else if (errMsg === 'Invalid phone number format') {
+        msgKey = "auth.invalidPhone";
+      } else if (errMsg === 'Erro ao criar autenticação') {
+        msgKey = "auth.authServiceError";
+      } else if (err.code === 'auth/weak-password' || errMsg.includes('Password must be at least 8 characters')) {
+        msgKey = "auth.invalidPasswordFormat";
       } else if (err.code === 'auth/invalid-email') {
-        msg = "Endereço de e-mail inválido.";
+        msgKey = "auth.invalidEmailFormat";
+      } else if (errMsg.includes('Failed to fetch') || errMsg.includes('network error')) {
+        msgKey = "auth.networkError";
       }
 
-      setError(msg);
-      throw new Error(msg);
+      setError(msgKey);
+      throw new Error(msgKey);
     } finally {
       setIsLoading(false);
     }

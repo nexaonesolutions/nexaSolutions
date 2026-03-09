@@ -48,9 +48,11 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
 
   try {
     const usersRef = adminDb.collection('users');
+
+    // 1. Verificações de Unicidade
     const existingEmailSnap = await usersRef.where('email', '==', email).get();
     if (!existingEmailSnap.empty) {
-      return res.status(409).json({ message: 'User already exists' });
+      return res.status(409).json({ message: 'Email already in use' });
     }
 
     const cleanedCpf = cpf.replace(/[^\d]+/g, '');
@@ -66,7 +68,7 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
       return res.status(409).json({ message: 'Phone already in use' });
     }
 
-    // Optional: Also register in Firebase Auth
+    // 2. Registro no Firebase Auth (Obrigatório para o funcionamento do Frontend)
     let fbUid = undefined;
     if (adminAuth) {
       try {
@@ -77,14 +79,19 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
         });
         fbUid = userRecord.uid;
       } catch (fbErr: any) {
-        if (fbErr.code !== 'auth/email-already-exists') {
-          console.warn('Firebase Auth creation failed, but proceeding locally:', fbErr.message);
+        console.error('Firebase Auth creation error:', fbErr.message);
+        if (fbErr.code === 'auth/email-already-exists') {
+          return res.status(409).json({ message: 'Email already in use' });
         }
+        return res.status(500).json({ message: 'Erro ao criar autenticação', error: fbErr.message });
       }
+    } else {
+      return res.status(500).json({ message: 'Serviço de autenticação indiponível' });
     }
 
+    // 3. Persistência no Firestore
     const hashedPassword = await hashPassword(password);
-    const newDocRef = fbUid ? usersRef.doc(fbUid) : usersRef.doc();
+    const newDocRef = usersRef.doc(fbUid); // Usamos o UID do Firebase como ID do documento
 
     const newUser: User = {
       id: newDocRef.id,
@@ -97,7 +104,7 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
     };
 
     await newDocRef.set(newUser);
-    console.log('Registered new user:', newUser.email);
+    console.log('Successfully registered new user:', newUser.email);
 
     const userResponse = {
       id: newUser.id,
@@ -111,6 +118,7 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
     const accessToken = jwt.sign({ id: newUser.id, role: newUser.role }, SECRET_KEY, { expiresIn: '3d' });
     res.status(201).json({ message: 'User registered successfully', token: accessToken, user: userResponse });
   } catch (err: any) {
+    console.error('Registration Catch Error:', err);
     res.status(500).json({ message: 'Registration failed', error: err.message });
   }
 }];

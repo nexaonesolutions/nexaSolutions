@@ -19,7 +19,4 @@ export const getApiUrl = () => {
 
 export const API_URL = getApiUrl();
 
-// Debug log for production connectivity troubleshooting
-if (import.meta.env.PROD) {
-  console.log(`%c[Config] API_URL em Produção: ${API_URL || '(vazia/relativa)'}`, 'color:#0ea5e9;font-weight:bold;');
-}
+// API_URL is used by the app to connect to the backend.

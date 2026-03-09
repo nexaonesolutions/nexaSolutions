@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         const userToken = await firebaseUser.getIdToken();
         setToken(userToken);
-        console.log(`[Auth] User loaded: ${firebaseUser.email}, Role: ${isNexaAdmin ? 'admin' : 'client'}`);
+        // User loaded successfully
       } else {
         setUser(null);
         setToken(null);
@@ -224,190 +224,170 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         redactedHeaders['Authorization'] = 'Bearer [REDACTED]';
       }
 
-      // Friendly, colored grouped logs for easier reading in console
-      try {
-        console.groupCollapsed(`%c[API] ${method} ${endpoint}`, 'color:#0b5cff;font-weight:700');
-        console.log('URL:', url);
-        console.log('Headers:', redactedHeaders);
-        if (options.body) {
-          try {
-            console.log('Body:', JSON.parse(options.body as string));
-          } catch (e) {
-            console.log('Body:', options.body);
-          }
-        }
-      } catch (e) {
-        // In some environments console.groupCollapsed may fail; ignore
-      }
-
-      // Sanitize Authorization header: don't send 'Bearer null' or 'Bearer undefined'
-      if (options.headers && (options as any).headers['Authorization']) {
-        const authVal = (options as any).headers['Authorization'];
-        if (!authVal || /Bearer\s*(null|undefined|""|')/i.test(authVal)) {
-          // remove invalid Authorization header
-          const { Authorization, ...rest } = options.headers as Record<string, any>;
-          options.headers = rest as HeadersInit;
-        }
-      }
-
-      const fetchHeaders: Record<string, any> = { ...((options.headers as Record<string, any>) || {}) };
-      if (options.body) {
-        // Ensure body is a string for fetch
-        if (typeof options.body !== 'string') {
-          (options as any).body = JSON.stringify(options.body);
-        }
-        fetchHeaders['Content-Type'] = 'application/json';
-      }
-      // Always accept JSON responses
-      fetchHeaders['Accept'] = 'application/json';
-
-      // Prepare final options for fetch without allowing the original `options` to overwrite our headers
-      const finalOptions: any = { ...options };
-      finalOptions.headers = fetchHeaders;
-
-      // Final debug log of what will be sent to the network
-      try {
-        console.log('%c[API] Final fetch payload', 'color:#094a86;font-weight:700', { url, method, headers: finalOptions.headers, body: finalOptions.body });
-      } catch (e) { }
-
-      const response = await fetch(url, finalOptions);
-
-      // Tenta ler como texto primeiro para evitar erros de parse em respostas vazias ou HTML
-      const text = await response.text();
-      let data;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (e) {
-        try { console.warn('%c[API] Resposta não é JSON', 'color:orange;'); console.log(text); } catch (_) { }
-        throw new Error(`Erro inesperado do servidor (${response.status})`);
-      }
-
-      const duration = Date.now() - startTime;
-      try {
-        console.log('%c[API] Response', 'color:green;font-weight:700', { status: response.status, duration: `${duration}ms`, data });
-      } catch (e) { }
-      try { console.groupEnd(); } catch (e) { }
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Ocorreu um erro.');
-      }
-
-      return data;
-    } catch (err: any) {
-      try { console.groupEnd(); } catch (e) { }
-      console.error('%c[API] Erro na requisição', 'color:#c62828;font-weight:700', err);
-      let message = err.message;
-      if (message === 'Failed to fetch' || message.includes('NetworkError') || message.includes('Connection refused')) {
-        message = `Não foi possível conectar ao servidor em ${url}. Verifique se o backend está rodando.`;
-      }
-      setError(message);
-      throw new Error(message); // Re-lança o erro para que o componente que chamou possa tratar
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      // Ignore
     }
-  };
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Data is handled by onAuthStateChanged
-      return userCredential.user;
-    } catch (err: any) {
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-        try {
-          // Legacy migration fallback: Backend will verify hash and sync with Firebase Auth
-          await apiCall('/api/auth/login', {
-            method: 'POST',
-            body: { email, password }
-          });
-          // Retry Firebase auth after sync
-          const retryCredential = await signInWithEmailAndPassword(auth, email, password);
-          return retryCredential.user;
-        } catch (backendErr: any) {
-          const errMsg = backendErr.message || "Falha no login. Verifique suas credenciais.";
-          setError(errMsg);
-          throw new Error(errMsg);
-        }
+    // Sanitize Authorization header: don't send 'Bearer null' or 'Bearer undefined'
+    if (options.headers && (options as any).headers['Authorization']) {
+      const authVal = (options as any).headers['Authorization'];
+      if (!authVal || /Bearer\s*(null|undefined|""|')/i.test(authVal)) {
+        // remove invalid Authorization header
+        const { Authorization, ...rest } = options.headers as Record<string, any>;
+        options.headers = rest as HeadersInit;
       }
-
-      let msg = "Falha no login. Verifique suas credenciais.";
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setIsLoading(false);
     }
-  };
 
-  const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Save profile in Firestore
-      await setDoc(doc(db, 'users', uid), {
-        name,
-        email,
-        cpf: cpf.replace(/[^\d]+/g, ''),
-        phone: phone.replace(/[^\d]+/g, ''),
-        role: email === 'nexa2114@gmail.com' ? 'admin' : 'client',
-        createdAt: new Date().toISOString()
-      });
-
-      return userCredential.user;
-    } catch (err: any) {
-      let msg = "Erro ao registrar usuário.";
-      if (err.code === 'auth/email-already-in-use') {
-        msg = "auth.emailAlreadyInUse";
+    const fetchHeaders: Record<string, any> = { ...((options.headers as Record<string, any>) || {}) };
+    if (options.body) {
+      // Ensure body is a string for fetch
+      if (typeof options.body !== 'string') {
+        (options as any).body = JSON.stringify(options.body);
       }
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setIsLoading(false);
+      fetchHeaders['Content-Type'] = 'application/json';
     }
+    // Always accept JSON responses
+    fetchHeaders['Accept'] = 'application/json';
+
+    // Prepare final options for fetch without allowing the original `options` to overwrite our headers
+    const finalOptions: any = { ...options };
+    finalOptions.headers = fetchHeaders;
+
+  } catch (e) { }
+
+  const response = await fetch(url, finalOptions);
+
+  // Tenta ler como texto primeiro para evitar erros de parse em respostas vazias ou HTML
+  const text = await response.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (e) {
+    try { console.warn('%c[API] Resposta não é JSON', 'color:orange;'); console.log(text); } catch (_) { }
+    throw new Error(`Erro inesperado do servidor (${response.status})`);
+  }
+
+} catch (e) { }
+
+if (!response.ok) {
+  throw new Error(data.message || data.error || 'Ocorreu um erro.');
+}
+
+return data;
+    } catch (err: any) {
+  // API call failed
+  let message = err.message;
+  if (message === 'Failed to fetch' || message.includes('NetworkError') || message.includes('Connection refused')) {
+    message = `Não foi possível conectar ao servidor em ${url}. Verifique se o backend está rodando.`;
+  }
+  setError(message);
+  throw new Error(message); // Re-lança o erro para que o componente que chamou possa tratar
+} finally {
+  setIsLoading(false);
+}
   };
 
-  const logout = async () => {
-    await signOut(auth);
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
-  };
+const login = async (email: string, password: string) => {
+  setIsLoading(true);
+  setError(null);
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    // Data is handled by onAuthStateChanged
+    return userCredential.user;
+  } catch (err: any) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      try {
+        // Legacy migration fallback: Backend will verify hash and sync with Firebase Auth
+        await apiCall('/api/auth/login', {
+          method: 'POST',
+          body: { email, password }
+        });
+        // Retry Firebase auth after sync
+        const retryCredential = await signInWithEmailAndPassword(auth, email, password);
+        return retryCredential.user;
+      } catch (backendErr: any) {
+        const errMsg = backendErr.message || "Falha no login. Verifique suas credenciais.";
+        setError(errMsg);
+        throw new Error(errMsg);
+      }
+    }
 
-  const forgotPassword = async (email: string) => {
-    await sendPasswordResetEmail(auth, email);
-  };
+    let msg = "Falha no login. Verifique suas credenciais.";
+    setError(msg);
+    throw new Error(msg);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-  const resetPassword = async (token: string, password: string) => {
-    // Handled natively by Firebase via reset links
-    throw new Error("Password reset is handled via email link.");
-  };
+const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
+  setIsLoading(true);
+  setError(null);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
 
-  const value = {
-    user,
-    token,
-    login,
-    register,
-    logout,
-    forgotPassword,
-    resetPassword,
-    isLoading,
-    error,
-    pendingOrder,
-    setPendingOrder,
-    orders,
-    fetchOrders,
-    isAuthenticated,
-    updateProfile,
-    changePassword,
-    loadUser,
-  };
+    // Save profile in Firestore
+    await setDoc(doc(db, 'users', uid), {
+      name,
+      email,
+      cpf: cpf.replace(/[^\d]+/g, ''),
+      phone: phone.replace(/[^\d]+/g, ''),
+      role: email === 'nexa2114@gmail.com' ? 'admin' : 'client',
+      createdAt: new Date().toISOString()
+    });
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return userCredential.user;
+  } catch (err: any) {
+    let msg = "Erro ao registrar usuário.";
+    if (err.code === 'auth/email-already-in-use') {
+      msg = "auth.emailAlreadyInUse";
+    }
+    setError(msg);
+    throw new Error(msg);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const logout = async () => {
+  await signOut(auth);
+  setUser(null);
+  setToken(null);
+  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
+};
+
+const forgotPassword = async (email: string) => {
+  await sendPasswordResetEmail(auth, email);
+};
+
+const resetPassword = async (token: string, password: string) => {
+  // Handled natively by Firebase via reset links
+  throw new Error("Password reset is handled via email link.");
+};
+
+const value = {
+  user,
+  token,
+  login,
+  register,
+  logout,
+  forgotPassword,
+  resetPassword,
+  isLoading,
+  error,
+  pendingOrder,
+  setPendingOrder,
+  orders,
+  fetchOrders,
+  isAuthenticated,
+  updateProfile,
+  changePassword,
+  loadUser,
+};
+
+return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

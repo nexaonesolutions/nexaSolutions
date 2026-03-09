@@ -82,13 +82,12 @@ const StripeCheckout = ({ plan }) => {
       });
   }, [plan]);
 
-  const appearance = {
-    theme: 'night',
-    labels: 'floating',
-  };
   const options: StripeElementsOptions = {
     clientSecret,
-    appearance,
+    appearance: {
+      theme: 'night' as const,
+      labels: 'floating' as const,
+    } as any,
   };
 
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);

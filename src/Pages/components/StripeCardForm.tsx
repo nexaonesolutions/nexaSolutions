@@ -70,7 +70,7 @@ const CheckoutForm: React.FC<StripeCardFormProps> = ({ amount, currency }) => {
       if (backendError) {
         throw new Error(backendError);
       }
-      
+
       if (!clientSecret) {
         throw new Error('Failed to retrieve payment client secret.');
       }
@@ -78,7 +78,7 @@ const CheckoutForm: React.FC<StripeCardFormProps> = ({ amount, currency }) => {
       // 2. Confirm the payment on the frontend
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: cardElement,
+          card: cardElement as any,
           billing_details: {
             name: 'Test User', // This should be dynamic from a form field
           },
@@ -108,14 +108,14 @@ const CheckoutForm: React.FC<StripeCardFormProps> = ({ amount, currency }) => {
       <div style={{ background: '#222', padding: '15px', borderRadius: '5px', border: '1px solid #444' }}>
         <CardElement options={cardElementOptions} />
       </div>
-      <button 
-        type="submit" 
-        disabled={!stripe || isLoading} 
+      <button
+        type="submit"
+        disabled={!stripe || isLoading}
         style={{
-          ...inputStyle, 
-          marginTop: '20px', 
-          background: isLoading ? '#555' : '#6772e5', 
-          color: 'white', 
+          ...inputStyle,
+          marginTop: '20px',
+          background: isLoading ? '#555' : '#6772e5',
+          color: 'white',
           cursor: isLoading ? 'not-allowed' : 'pointer'
         }}
       >

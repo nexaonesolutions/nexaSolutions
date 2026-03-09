@@ -6,7 +6,7 @@ import { User, Mail, LogOut, ShoppingCart, FileText, Plus, Trash2, AlertTriangle
 import DeleteAccountModal from './DeleteAccountModal';
 import { Order } from './types';
 import { API_URL } from '../../../utils/apiConfig';
-import { Dialog } from '@headlessui/react';
+// import { Dialog } from '@headlessui/react';
 
 const ProfilePage: React.FC = () => {
   const { user, token, logout, isLoading } = useAuth();

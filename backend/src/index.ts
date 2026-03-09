@@ -25,7 +25,9 @@ const allowedOrigins = [
   process.env.VITE_FRONTEND_URL || 'http://localhost:5173',
   'https://nexa-solutions.vercel.app',
   'https://www.nexasolutions.com.br',
-  'https://nexasolutions.com.br'
+  'https://nexasolutions.com.br',
+  'https://www.nexasolutions.store',
+  'https://nexasolutions.store'
 ];
 
 app.use(cors({

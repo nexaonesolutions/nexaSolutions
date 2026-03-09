@@ -56,8 +56,12 @@ const ChatWidget: React.FC = () => {
                         setSelectedOrderId(ids[0]);
                     }
                 }
-            } catch (err) {
-                console.error("Error fetching orders for chat:", err);
+            } catch (err: any) {
+                if (err.message === 'Failed to fetch') {
+                    console.error("[Chat] Falha crítica de conexão com a API de pedidos. Verifique o status do backend e as configurações de CORS.");
+                } else {
+                    console.error("Error fetching orders for chat:", err);
+                }
             }
         };
 

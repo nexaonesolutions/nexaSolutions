@@ -196,7 +196,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 
   // Função genérica para chamadas à API
-  const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+  const apiCall = async (endpoint: string, options: any = {}) => {
     setIsLoading(true);
     setError(null);
     // Garante que não haja barras duplicadas se API_URL terminar com /

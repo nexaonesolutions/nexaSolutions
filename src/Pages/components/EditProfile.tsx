@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Save, ArrowLeft, Loader, Lock, Image as ImageIcon, FileText } from 'lucide-react';
-import PasswordInput from './PasswordInput';
+// import PasswordInput from './PasswordInput';
 import { motion, useAnimation } from 'framer-motion';
 import { API_URL } from '../../../utils/apiConfig';
 
@@ -236,22 +236,23 @@ const EditProfile: React.FC = () => {
                 <label className="text-sm text-gray-400 flex items-center gap-2">
                   <Lock className="w-4 h-4" /> Nova Senha
                 </label>
-                <PasswordInput
+                <input
+                  type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Deixe em branco para manter a atual"
-                  showStrength={true}
-                  tooltipText="A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número."
+                  className="w-full bg-gray-900/50 border border-gray-700 rounded-lg p-3 text-white focus:border-nexa-primary focus:outline-none transition-colors"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm text-gray-400 flex items-center gap-2">
                   <Lock className="w-4 h-4" /> Confirmar Nova Senha
                 </label>
-                <PasswordInput
+                <input
+                  type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className={passwordMismatch ? "border-red-500 focus:border-red-500" : ""}
+                  className={`w-full bg-gray-900/50 border rounded-lg p-3 text-white focus:border-nexa-primary focus:outline-none transition-colors ${passwordMismatch ? "border-red-500 focus:border-red-500" : "border-gray-700"}`}
                 />
                 {passwordMismatch && (
                   <p className="text-xs text-red-400 mt-1">As senhas não coincidem.</p>

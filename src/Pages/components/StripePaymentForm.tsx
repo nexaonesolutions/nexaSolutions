@@ -273,7 +273,13 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ amount, currency,
       } catch (error: any) {
         if (ignore) return;
         console.error('Failed to create payment intent:', error);
-        setStripeFormError(error.message || 'Failed to initialize payment. Please try again.');
+
+        let userFriendlyMsg = error.message || 'Falha ao inicializar pagamento. Por favor, tente novamente.';
+        if (error.message === 'Failed to fetch') {
+          userFriendlyMsg = 'Não foi possível conectar ao servidor de pagamentos. Verifique sua conexão ou se o serviço está temporariamente indisponível (Erro de Conexão/CORS).';
+        }
+
+        setStripeFormError(userFriendlyMsg);
       }
     };
 

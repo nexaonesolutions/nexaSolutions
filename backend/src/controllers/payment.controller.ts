@@ -194,6 +194,17 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
           mainPlanName: mainPlan?.name
         }
       },
+      // Note: Full branding (Logos, Custom Background Colors) must be set via the Stripe Dashboard -> Settings -> Branding.
+      // E não diretamente via Código API para as sessões, mas podemos customizar alguns detalhes de consentimento.
+      consent_collection: {
+        terms_of_service: 'required',
+      },
+      custom_text: {
+        submit: {
+          message: 'Você concorda em iniciar o projeto hoje. A manutenção iniciará após 30 dias de carência.',
+        },
+      },
+      locale: 'pt-BR',
       success_url: `${req.headers.origin || 'http://localhost:5173'}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin || 'http://localhost:5173'}/pagamento`,
     });

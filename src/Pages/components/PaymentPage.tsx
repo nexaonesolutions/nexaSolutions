@@ -49,11 +49,14 @@ const PaymentPage: React.FC = () => {
         if (briefingData) sessionStorage.setItem('nexa_submitted_briefing', JSON.stringify(briefingData));
     }, [mainPlan, maintenancePlan, briefingData]);
 
-    // Se houver plano de manutenção, o valor pago agora é a soma de ambos. A manutenção se tornará mensal futuramente.
+    // Se houver plano de manutenção, o valor pago agora é APENAS o Setup (mainPlan).
+    // A manutenção tem 30 dias de carência (trial) configurados no Stripe.
     const mainPlanValue = mainPlan ? Number(String(mainPlan.price).replace(/[^0-9.-]+/g, "")) : 0;
     const maintenanceValue = maintenancePlan ? Number(String(maintenancePlan.price).replace(/[^0-9.-]+/g, "")) : 0;
 
-    const total = mainPlanValue + maintenanceValue;
+    // Se houver manutenção, o total hoje é só o setup. Se for pagamento único (sem manutenção), o total é o setup.
+    // Basicamente, o Setup é sempre pago hoje. A manutenção só daqui a 30 dias.
+    const total = mainPlanValue;
     const currency = mainPlan?.currency || maintenancePlan?.currency || 'BRL';
     const isBRL = currency === 'R$' || currency === 'BRL';
     const currencySymbol = isBRL ? 'R$' : currency;
@@ -318,7 +321,7 @@ const PaymentPage: React.FC = () => {
                                         <div className="mt-8 pt-6 border-t border-gray-700/50">
                                             <h3 className="text-sm font-bold text-gray-300 mb-3 text-center uppercase tracking-widest">Informações de Assinatura</h3>
                                             <p className="text-xs text-gray-400 text-center mb-4">
-                                                O valor da sua ativação (Landing Page / WebSite) será cobrado hoje, mas a assinatura da Manutenção ({currencySymbol}{maintenanceValue}/mês) só passará a ser cobrada daqui a 30 dias.
+                                                O valor da construção (Setup) será cobrado hoje. A sua assinatura de Manutenção ({currencySymbol}{maintenanceValue}/mês) tem **30 dias de carência gratuita** e só começará a ser cobrada após a entrega do projeto.
                                             </p>
                                         </div>
                                     </>

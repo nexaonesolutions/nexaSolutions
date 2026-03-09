@@ -21,49 +21,71 @@ const SuccessPage: React.FC = () => {
 
       const params = new URLSearchParams(location.search);
       const paymentIntentId = params.get('payment_intent');
+      const sessionId = params.get('session_id');
 
-      if (!paymentIntentId || !token) {
+      if (!token || (!paymentIntentId && !sessionId)) {
         setStatus('error');
-        setErrorMessage('Invalid session or payment ID.');
+        setErrorMessage('Sessão ou ID de pagamento inválido.');
         return;
       }
 
       try {
-        // 1. Get Payment Intent
-        const piResponse = await fetch(`${API_URL}/api/payments/stripe-payment-intent/${paymentIntentId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        let orderPayload: any = null;
 
-        if (!piResponse.ok) throw new Error('Failed to retrieve payment details.');
+        if (sessionId) {
+          // Flow for Subscriptions
+          const sessionRes = await fetch(`${API_URL}/api/payments/checkout-session/${sessionId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!sessionRes.ok) throw new Error('Falha ao recuperar detalhes da sessão de assinatura.');
+          const { session } = await sessionRes.json();
 
-        const { paymentIntent } = await piResponse.json();
+          orderPayload = {
+            total: session.amount_total / 100,
+            mainPlanName: session.metadata.mainPlanName,
+            maintenancePlanName: session.metadata.maintenancePlanName,
+            briefing: session.metadata?.briefing || undefined,
+            paymentMethod: 'subscription_card',
+            paymentDetails: { subscriptionId: session.subscription?.id || session.subscription },
+            currency: session.currency || 'brl',
+            clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
+            clientEmail: user?.email || undefined,
+            orderId: session.metadata?.orderId || undefined,
+          };
+        } else if (paymentIntentId) {
+          // Flow for One-time Payments
+          const piResponse = await fetch(`${API_URL}/api/payments/stripe-payment-intent/${paymentIntentId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!piResponse.ok) throw new Error('Falha ao recuperar detalhes do pagamento.');
+          const { paymentIntent } = await piResponse.json();
 
-        // 2. Create Order
-        const paymentMethod = paymentIntent.payment_method_details?.type || (paymentIntent.payment_method_types && paymentIntent.payment_method_types[0]) || 'card';
+          orderPayload = {
+            total: paymentIntent.amount / 100,
+            mainPlanName: paymentIntent.metadata.mainPlanName,
+            maintenancePlanName: paymentIntent.metadata.maintenancePlanName,
+            briefing: paymentIntent.metadata?.briefing || undefined,
+            paymentMethod: paymentIntent.payment_method_details?.type || 'card',
+            paymentDetails: paymentIntent.charges?.data?.[0] || undefined,
+            currency: paymentIntent.currency || 'brl',
+            clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
+            clientEmail: user?.email || undefined,
+            orderId: paymentIntent.metadata?.orderId || paymentIntent.metadata?.order_id || undefined,
+          };
+        }
 
-        const orderPayload: any = {
-          total: paymentIntent.amount / 100,
-          mainPlanName: paymentIntent.metadata.mainPlanName,
-          maintenancePlanName: paymentIntent.metadata.maintenancePlanName,
-          briefing: paymentIntent.metadata?.briefing || undefined,
-          paymentMethod,
-          paymentDetails: paymentIntent.charges?.data?.[0] || undefined,
-          currency: paymentIntent.currency || undefined,
-          clientName: user?.name || user?.email?.split('@')[0] || 'Unknown',
-          clientEmail: user?.email || undefined,
-          orderId: paymentIntent.metadata?.orderId || paymentIntent.metadata?.order_id || undefined,
-        };
+        if (orderPayload) {
+          const orderResponse = await fetch(`${API_URL}/api/orders`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(orderPayload)
+          });
 
-        const orderResponse = await fetch(`${API_URL}/api/orders`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(orderPayload)
-        });
-
-        if (!orderResponse.ok) throw new Error('Failed to save the order.');
+          if (!orderResponse.ok) throw new Error('Falha ao salvar o pedido no banco de dados.');
+        }
 
         setStatus('success');
         localStorage.removeItem('nexa_briefing_draft');
@@ -73,7 +95,7 @@ const SuccessPage: React.FC = () => {
 
       } catch (err: any) {
         setStatus('error');
-        setErrorMessage(err.message || 'An unexpected error occurred while saving your order.');
+        setErrorMessage(err.message || 'Ocorreu um erro inesperado ao salvar seu pedido.');
       }
     };
 

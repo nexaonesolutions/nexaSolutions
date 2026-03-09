@@ -110,6 +110,26 @@ export const getPaymentIntent = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getCheckoutSession = async (req: Request, res: Response) => {
+  if (!stripe) {
+    return res.status(500).json({ error: 'Stripe is not configured. STRIPE_SECRET_KEY is missing from environment variables.' });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(id, {
+      expand: ['subscription', 'payment_intent'],
+    });
+    res.send({
+      session,
+    });
+  } catch (error: any) {
+    console.error(`Error retrieving Stripe checkout session for ${id}:`, error);
+    res.status(500).json({ error: error.message });
+  }
+};
 export const createStripeSubscription = async (req: Request, res: Response) => {
   if (!stripe) {
     return res.status(500).json({ error: 'Stripe is not configured. STRIPE_SECRET_KEY is missing from environment variables.' });

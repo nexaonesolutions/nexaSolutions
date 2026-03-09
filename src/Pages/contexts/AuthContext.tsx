@@ -307,41 +307,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const cleanCpf = cpf.replace(/[^\d]+/g, '');
       const cleanPhone = phone.replace(/[^\d]+/g, '');
 
-      // Check if CPF already exists
-      const cpfQuery = query(collection(db, 'users'), where('cpf', '==', cleanCpf));
-      const cpfSnapshot = await getDocs(cpfQuery);
-      if (!cpfSnapshot.empty) {
-        throw new Error('Este CPF já está associado a outra conta.');
-      }
-
-      // Check if phone already exists
-      const phoneQuery = query(collection(db, 'users'), where('phone', '==', cleanPhone));
-      const phoneSnapshot = await getDocs(phoneQuery);
-      if (!phoneSnapshot.empty) {
-        throw new Error('Este número de telefone já está associado a outra conta.');
-      }
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Save profile in Firestore
-      await setDoc(doc(db, 'users', uid), {
-        name,
-        email,
-        cpf: cleanCpf,
-        phone: cleanPhone,
-        role: email === 'nexa2114@gmail.com' ? 'admin' : 'client',
-        createdAt: new Date().toISOString()
+      // Invoca a API de Registration no Backend para burlar as Firebase Security Rules de Read unauthenticated
+      await apiCall('/api/auth/register', {
+        method: 'POST',
+        body: { name, email, password, cpf: cleanCpf, phone: cleanPhone }
       });
+
+      // Após o backend criar de forma segura o registro (Auth + Firestore), logamos o usuário na sessão do Browser
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       return userCredential.user;
     } catch (err: any) {
-      let msg = "Erro ao registrar usuário.";
+      console.error("Firebase Register Error:", err);
+      let msg = err.message || "Erro desconhecido ao registrar usuário.";
 
-      if (err.code === 'auth/email-already-in-use') {
-        msg = "auth.emailAlreadyInUse";
-      } else if (err.message && err.message.includes('associado a outra conta')) {
-        msg = err.message; // Repassa a nossa mensagem customizada do CPF/Telefone
+      if (msg === 'User already exists' || err.code === 'auth/email-already-in-use') {
+        msg = "Este e-mail já está em uso por outra conta.";
+      } else if (msg === 'CPF already in use') {
+        msg = "Este CPF já está associado a outra conta.";
+      } else if (msg === 'Phone already in use') {
+        msg = "Este número de telefone já está em uso.";
+      } else if (msg === 'Invalid CPF') {
+        msg = "CPF Inválido.";
+      } else if (msg === 'Invalid phone number format') {
+        msg = "Formato de telefone inválido.";
+      } else if (err.code === 'auth/weak-password') {
+        msg = "A senha deve ter pelo menos 6 caracteres.";
+      } else if (err.code === 'auth/invalid-email') {
+        msg = "Endereço de e-mail inválido.";
       }
 
       setError(msg);

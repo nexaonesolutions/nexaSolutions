@@ -61,6 +61,11 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
       return res.status(409).json({ message: 'CPF already in use' });
     }
 
+    const existingPhoneSnap = await usersRef.where('phone', '==', cleanedPhone).get();
+    if (!existingPhoneSnap.empty) {
+      return res.status(409).json({ message: 'Phone already in use' });
+    }
+
     // Optional: Also register in Firebase Auth
     let fbUid = undefined;
     if (adminAuth) {

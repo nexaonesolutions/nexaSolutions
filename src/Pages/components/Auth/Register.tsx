@@ -222,7 +222,7 @@ const Register: React.FC = () => {
               disabled={isLoading}
               className={`group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexa-primary transition duration-300 shadow-lg shadow-nexa-primary/30 hover:shadow-nexa-secondary/40 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isLoading ? t('auth.loading') || 'Carregando...' : t('auth.register')}
+              {isLoading ? t('auth.loading') : t('auth.register')}
             </button>
           </div>
         </form>

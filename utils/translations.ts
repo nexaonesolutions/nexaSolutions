@@ -177,6 +177,7 @@ export const translations = {
     'auth': {
       'login': 'Fazer Login',
       'logout': 'Sair',
+      'loading': 'Carregando...',
       'login_title': 'Acesse sua conta',
       'loginTitle': 'Acesse sua conta',
       'or': 'ou',
@@ -497,6 +498,7 @@ export const translations = {
     'auth': {
       'login': 'Login',
       'logout': 'Logout',
+      'loading': 'Loading...',
       'login_title': 'Welcome Back!',
       'loginTitle': 'Welcome Back!',
       'or': 'or',
@@ -844,6 +846,7 @@ export const translations = {
     'auth': {
       'login': 'Entrar',
       'logout': 'Sair',
+      'loading': 'A carregar...',
       'login_title': 'Bem-vindo de volta!',
       'loginTitle': 'Bem-vindo de volta!',
       'or': 'ou',
@@ -1184,6 +1187,7 @@ export const translations = {
     'auth': {
       'login': 'Iniciar Sesión',
       'logout': 'Cerrar Sesión',
+      'loading': 'Cargando...',
       'login_title': '¡Bienvenido de nuevo!',
       'loginTitle': '¡Bienvenido de nuevo!',
       'or': 'o',

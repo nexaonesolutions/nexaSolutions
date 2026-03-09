@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { updateProfile, deleteAccount } from '../controllers/user.controller';
-import { authenticate } from '../auth';
+import { authenticate } from '../controllers/auth.controller';
 
 const router = Router();
 

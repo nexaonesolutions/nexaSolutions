@@ -58,9 +58,15 @@ export const createStripePaymentIntent = async (req: Request, res: Response) => 
           paymentMethod: 'pending',
           paymentDetails: null,
           currency: currency,
-          status: 'pending',
-          invoiceUrl: undefined,
+          status: 'pending'
         };
+
+        // Remove explicit undefined values before saving to Firestore
+        Object.keys(pendingOrder).forEach(key => {
+          if ((pendingOrder as any)[key] === undefined) {
+            delete (pendingOrder as any)[key];
+          }
+        });
 
         if (orderSnap.exists) {
           await orderDocRef.update({ ...pendingOrder });
@@ -211,6 +217,12 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
           status: 'pending_subscription',
           checkoutSessionId: session.id,
         };
+
+        Object.keys(pendingOrder).forEach(key => {
+          if ((pendingOrder as any)[key] === undefined) {
+            delete (pendingOrder as any)[key];
+          }
+        });
 
         if (orderSnap.exists) {
           await orderDocRef.update({ ...pendingOrder });

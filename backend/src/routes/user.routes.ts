@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { updateProfile } from '../controllers/user.controller';
+import { updateProfile, deleteAccount } from '../controllers/user.controller';
 import { authenticate } from '../auth';
 
 const router = Router();
 
 router.put('/profile', authenticate, updateProfile);
+router.delete('/profile', authenticate, deleteAccount);
 
 export default router;

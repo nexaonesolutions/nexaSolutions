@@ -72,8 +72,13 @@ const ProfilePage: React.FC = () => {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Falha ao deletar a conta.');
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          throw new Error(data.message || 'Falha ao deletar a conta.');
+        } else {
+          throw new Error(`Erro do Servidor (${response.status}). Tente novamente.`);
+        }
       }
 
       // On successful deletion, log out and redirect

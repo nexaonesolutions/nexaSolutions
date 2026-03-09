@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollText, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ScrollText, CheckCircle2, AlertTriangle, ShieldCheck, ArrowDownToLine } from 'lucide-react';
 
 interface ContractViewerProps {
     clientName: string;
@@ -29,6 +29,30 @@ const ContractViewer: React.FC<ContractViewerProps> = ({
     trialEndDate.setDate(trialEndDate.getDate() + 30);
     const formattedTrialEndDate = trialEndDate.toLocaleDateString('pt-BR');
 
+    const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // Initial check in case content is so short it doesn't need scrolling
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (container) {
+            if (container.scrollHeight <= container.clientHeight) {
+                setHasScrolledToBottom(true);
+            }
+        }
+    }, [mainPlanName, maintenancePlanName]);
+
+    const handleScroll = () => {
+        const container = scrollContainerRef.current;
+        if (container) {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            // 15px threshold for tolerance
+            if (scrollTop + clientHeight >= scrollHeight - 15) {
+                setHasScrolledToBottom(true);
+            }
+        }
+    };
+
     return (
         <div className="relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -43,7 +67,11 @@ const ContractViewer: React.FC<ContractViewerProps> = ({
                 </div>
             </div>
 
-            <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 mb-6 max-h-[400px] overflow-y-auto custom-scrollbar text-sm text-gray-300 space-y-4 font-mono leading-relaxed">
+            <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 mb-6 max-h-[400px] overflow-y-auto custom-scrollbar text-sm text-gray-300 space-y-4 font-mono leading-relaxed relative"
+            >
                 <p className="text-center font-bold text-white mb-6">LICENÇA DE USO E DESENVOLVIMENTO DE SOFTWARE</p>
 
                 <p>
@@ -92,10 +120,23 @@ const ContractViewer: React.FC<ContractViewerProps> = ({
             <div className="pt-4 border-t border-gray-800">
                 <button
                     onClick={onAccept}
-                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-black py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 group text-lg"
+                    disabled={!hasScrolledToBottom}
+                    className={`w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 group text-lg ${hasScrolledToBottom
+                            ? 'bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(34,211,238,0.3)] shadow-cyan-500/30'
+                            : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
+                        }`}
                 >
-                    <CheckCircle2 className="group-hover:scale-110 transition-transform" />
-                    Li e Aceito os Termos de Serviço
+                    {hasScrolledToBottom ? (
+                        <>
+                            <CheckCircle2 className="group-hover:scale-110 transition-transform" />
+                            Li e Aceito os Termos de Serviço
+                        </>
+                    ) : (
+                        <>
+                            <ArrowDownToLine className="animate-bounce" />
+                            Role até o final para aceitar
+                        </>
+                    )}
                 </button>
                 <p className="text-center text-xs text-gray-500 mt-3">
                     Ao confirmar, você atesta força legal equivalente à assinatura física neste documento, gerando logs e rastros de IP.

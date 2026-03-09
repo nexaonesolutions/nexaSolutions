@@ -22,6 +22,7 @@ import AdminPage from '@/src/Pages/components/Admin/AdminPage';
 import NotFoundPage from '@/src/Pages/components/NotFoundPage';
 import SuccessPage from '@/src/Pages/components/SuccessPage';
 import ChatWidget from '@/src/Pages/components/ChatWidget';
+import TermsOfUse from '@/src/Pages/components/Legal/TermsOfUse';
 
 
 
@@ -88,6 +89,7 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           } />
           <Route path="/success" element={<SuccessPage />} />
+          <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

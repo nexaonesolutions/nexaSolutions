@@ -15,7 +15,7 @@ const Register: React.FC = () => {
   const [phone, setPhone] = useState<string>(''); // New state for phone
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { register } = useAuth();
+  const { register, isLoading } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -219,9 +219,10 @@ const Register: React.FC = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexa-primary transition duration-300 shadow-lg shadow-nexa-primary/30 hover:shadow-nexa-secondary/40"
+              disabled={isLoading}
+              className={`group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-md text-black bg-nexa-primary hover:bg-nexa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-nexa-primary transition duration-300 shadow-lg shadow-nexa-primary/30 hover:shadow-nexa-secondary/40 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {t('auth.register')}
+              {isLoading ? t('auth.loading') || 'Carregando...' : t('auth.register')}
             </button>
           </div>
         </form>

@@ -126,7 +126,7 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
           },
           product_data: {
             name: `Manutenção Nexa - ${maintenancePlan?.name || 'Plano'}`,
-            description: 'Cobrança mensal recorrente após o primeiro mês.'
+            description: 'Cobrança recorrente. O 1º mês é gratuito durante o desenvolvimento.'
           },
           unit_amount: Math.round(Number(amount) * 100),
         },
@@ -136,7 +136,17 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
 
     // Se houver um plano principal (Landing Page / Site), adiciona como um item de cobrança ÚNICA
     if (mainPlan) {
-      const mainPlanPrice = Number(String(mainPlan.price).replace(/[^0-9.-]+/g, ""));
+      let mainPlanPrice = 0;
+      if (typeof mainPlan.price === 'number') {
+        mainPlanPrice = mainPlan.price;
+      } else {
+        // Ex: "R$ 1.500,00" -> 1500.00 | "1500,00" -> 1500.00 | "2.497,99" -> 2497.99
+        let cleanStr = String(mainPlan.price).replace(/[A-Za-z$\s]/g, ""); // Remove letras e símbolos
+        cleanStr = cleanStr.replace(/\.(?=\d{3})/g, ''); // Remove apenas ponto de milhar
+        cleanStr = cleanStr.replace(',', '.'); // Troca vírgula decimal por ponto
+        mainPlanPrice = Number(cleanStr);
+      }
+
       if (mainPlanPrice > 0) {
         line_items.push({
           price_data: {
@@ -170,6 +180,7 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
         maintenancePlanName: maintenancePlan?.name || 'N/A'
       },
       subscription_data: {
+        trial_period_days: 30, // O cliente tem 30 dias de trial na assinatura. O valor do Setup é pago agora, a assinatura começa Mês que vem.
         metadata: {
           userId: userId,
           plan: maintenancePlan?.name,
@@ -219,6 +230,9 @@ export const createStripeSubscription = async (req: Request, res: Response) => {
       code: error.code,
       detail: error
     });
-    res.status(500).json({ error: error.message || 'Erro interno ao criar assinatura.' });
+    // Garante que a string do erro de fato seja exposta ao frontend (Stripe envia raw error também)
+    const errorMsg = typeof error.message === 'string' ? error.message :
+      (typeof error === 'string' ? error : JSON.stringify(error));
+    res.status(500).json({ error: errorMsg || 'Erro interno ao criar assinatura.' });
   }
 };

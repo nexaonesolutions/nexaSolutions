@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
   User as FirebaseUser
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { API_URL } from '../../../utils/apiConfig';
 
 // --- Interfaces ---
@@ -304,6 +304,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
+      const cleanCpf = cpf.replace(/[^\d]+/g, '');
+      const cleanPhone = phone.replace(/[^\d]+/g, '');
+
+      // Check if CPF already exists
+      const cpfQuery = query(collection(db, 'users'), where('cpf', '==', cleanCpf));
+      const cpfSnapshot = await getDocs(cpfQuery);
+      if (!cpfSnapshot.empty) {
+        throw new Error('Este CPF já está associado a outra conta.');
+      }
+
+      // Check if phone already exists
+      const phoneQuery = query(collection(db, 'users'), where('phone', '==', cleanPhone));
+      const phoneSnapshot = await getDocs(phoneQuery);
+      if (!phoneSnapshot.empty) {
+        throw new Error('Este número de telefone já está associado a outra conta.');
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
@@ -311,8 +328,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await setDoc(doc(db, 'users', uid), {
         name,
         email,
-        cpf: cpf.replace(/[^\d]+/g, ''),
-        phone: phone.replace(/[^\d]+/g, ''),
+        cpf: cleanCpf,
+        phone: cleanPhone,
         role: email === 'nexa2114@gmail.com' ? 'admin' : 'client',
         createdAt: new Date().toISOString()
       });
@@ -320,9 +337,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return userCredential.user;
     } catch (err: any) {
       let msg = "Erro ao registrar usuário.";
+
       if (err.code === 'auth/email-already-in-use') {
         msg = "auth.emailAlreadyInUse";
+      } else if (err.message && err.message.includes('associado a outra conta')) {
+        msg = err.message; // Repassa a nossa mensagem customizada do CPF/Telefone
       }
+
       setError(msg);
       throw new Error(msg);
     } finally {

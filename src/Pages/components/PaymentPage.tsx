@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, ChevronLeft, CreditCard, ChevronDown } from 'lucide-react';
+import { ShieldCheck, ChevronLeft, CreditCard, ChevronDown, ScrollText } from 'lucide-react';
 import StripePaymentForm from './StripePaymentForm';
 import { useAuth } from '../contexts/AuthContext';
 import ProjectBriefingModal from '../../../ProjectBriefingModal';
+import ContractViewer from './Legal/ContractViewer';
 import { API_URL } from '../../../utils/apiConfig';
 
 // type PaymentMethod = 'card' | 'pix'; // Removed Pix
@@ -39,6 +40,7 @@ const PaymentPage: React.FC = () => {
     });
     const [isSubscribing, setIsSubscribing] = useState(false);
     const [subscribeError, setSubscribeError] = useState<string | null>(null);
+    const [hasAcceptedContract, setHasAcceptedContract] = useState(false);
 
     // Salva no sessionStorage quando os dados mudam
     useEffect(() => {
@@ -82,6 +84,51 @@ const PaymentPage: React.FC = () => {
     };
 
     const renderPaymentMethod = () => {
+        if (!hasAcceptedContract) {
+            return (
+                <ContractViewer
+                    clientName={user?.name || user?.email?.split('@')[0] || 'Cliente'}
+                    mainPlanName={mainPlan.name}
+                    mainPlanPrice={mainPlanValue}
+                    maintenancePlanName={maintenancePlan?.name}
+                    maintenancePlanPrice={maintenanceValue}
+                    currencySymbol={currencySymbol}
+                    onAccept={() => setHasAcceptedContract(true)}
+                />
+            );
+        }
+
+        if (maintenancePlan) {
+            return (
+                <div className="flex flex-col items-center justify-center py-8">
+                    <CreditCard className="w-16 h-16 text-cyan-400 mb-4" />
+                    <h3 className="text-xl font-bold mb-2 text-center text-white">Pagamento Seguro via Stripe</h3>
+                    <p className="text-sm text-gray-400 text-center mb-6">
+                        Você será redirecionado para o ambiente seguro do Stripe para finalizar o pagamento do Setup e ativar a sua 1ª mensalidade de Manutenção Gratuita.
+                    </p>
+                    <button
+                        onClick={handleSubscribeMaintenance}
+                        disabled={isSubscribing}
+                        className="w-full sm:w-auto bg-gradient-to-r from-nexa-primary to-nexa-accent text-black px-8 py-3 rounded-full font-bold hover:brightness-110 transition-all flex items-center justify-center gap-2 group"
+                    >
+                        {isSubscribing ? (
+                            <span className="flex items-center gap-2">
+                                <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Processando...
+                            </span>
+                        ) : (
+                            'Ir para o Pagamento e Assinar'
+                        )}
+                    </button>
+                    {subscribeError && (
+                        <p className="text-red-400 text-xs text-center mt-4 bg-red-900/20 p-2 rounded">{subscribeError}</p>
+                    )}
+                </div>
+            );
+        }
         return <StripePaymentForm amount={total} currency={currency} mainPlan={mainPlan} maintenancePlan={maintenancePlan} briefingData={briefingData} />;
     }
 
@@ -127,7 +174,11 @@ const PaymentPage: React.FC = () => {
 
             if (!res.ok) {
                 const errorData = await res.json();
-                throw new Error(errorData.error || 'Failed to create subscription session');
+                let errorPayload = 'Failed to create subscription session';
+                if (errorData.error) {
+                    errorPayload = typeof errorData.error === 'string' ? errorData.error : JSON.stringify(errorData.error);
+                }
+                throw new Error(errorPayload);
             }
 
             const data = await res.json();
@@ -173,11 +224,17 @@ const PaymentPage: React.FC = () => {
                 <main className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     {/* Left Side: Payment Options */}
                     <div className="lg:order-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold mb-8">Efetue o Pagamento</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold mb-8">
+                            {hasAcceptedContract ? 'Efetue o Pagamento' : 'Revisão e Aceite de Termos'}
+                        </h1>
                         <div className={`bg-nexa-card/40 border border-gray-800 rounded-2xl p-6 sm:p-8 ${showBriefing ? 'opacity-50 pointer-events-none' : ''}`}>
                             <div className="flex mb-8 border-b border-gray-700">
                                 <div className="flex-1 p-4 text-center font-semibold flex items-center justify-center gap-2 text-nexa-primary border-b-2 border-nexa-primary">
-                                    <CreditCard size={20} /> Pagamento Seguro
+                                    {hasAcceptedContract ? (
+                                        <><CreditCard size={20} /> Pagamento Seguro</>
+                                    ) : (
+                                        <><ScrollText size={20} /> Assinatura do Contrato</>
+                                    )}
                                 </div>
                             </div>
                             {!showBriefing && renderPaymentMethod()}
@@ -258,34 +315,12 @@ const PaymentPage: React.FC = () => {
                                             )}
                                         </div>
 
-                                        {maintenancePlan && (
-                                            <div className="mt-8 pt-6 border-t border-gray-700/50">
-                                                <h3 className="text-sm font-bold text-gray-300 mb-3 text-center uppercase tracking-widest">Opção Recorrente Alternativa</h3>
-                                                <p className="text-xs text-gray-400 text-center mb-4">
-                                                    Deseja iniciar apenas a assinatura da manutenção mensal hoje e resolver o pagamento da Landing Page / Site separadamente?
-                                                </p>
-                                                <button
-                                                    onClick={handleSubscribeMaintenance}
-                                                    disabled={isSubscribing}
-                                                    className="w-full mt-4 bg-gray-800 border border-cyan-500/30 text-cyan-400 py-3 rounded-xl font-bold hover:bg-cyan-500/10 transition-all flex items-center justify-center gap-2 group"
-                                                >
-                                                    {isSubscribing ? (
-                                                        <span className="flex items-center gap-2">
-                                                            <svg className="animate-spin h-5 w-5 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                            </svg>
-                                                            Gerando...
-                                                        </span>
-                                                    ) : (
-                                                        `Assinar Manutenção por ${currencySymbol}${maintenanceValue}/mês`
-                                                    )}
-                                                </button>
-                                                {subscribeError && (
-                                                    <p className="text-red-400 text-xs text-center mt-2">{subscribeError}</p>
-                                                )}
-                                            </div>
-                                        )}
+                                        <div className="mt-8 pt-6 border-t border-gray-700/50">
+                                            <h3 className="text-sm font-bold text-gray-300 mb-3 text-center uppercase tracking-widest">Informações de Assinatura</h3>
+                                            <p className="text-xs text-gray-400 text-center mb-4">
+                                                O valor da sua ativação (Landing Page / WebSite) será cobrado hoje, mas a assinatura da Manutenção ({currencySymbol}{maintenanceValue}/mês) só passará a ser cobrada daqui a 30 dias.
+                                            </p>
+                                        </div>
                                     </>
                                 )}
                             </div>

@@ -29,7 +29,6 @@ window.addEventListener('unhandledrejection', (event) => {
     if (isStripeBlocked) {
       // Prevent the "Uncaught (in promise)" red error in console
       event.preventDefault();
-      console.warn('[Global] Stripe telemetry was blocked by an ad-blocker. This is expected and won\'t break payments.');
       return;
     }
 
@@ -50,7 +49,6 @@ window.addEventListener('error', (event) => {
     // Ignore syntax errors from browser extensions
     if (scriptSrc.includes('chrome-extension://') || errorMsg.includes('webpage_content_reporter.js')) {
       event.preventDefault();
-      console.warn('[Global] Ignorado erro de sintaxe proveniente de uma extensão do navegador:', scriptSrc);
       return;
     }
 
@@ -62,7 +60,6 @@ window.addEventListener('error', (event) => {
 // Backup handler for older/specific syntax errors
 window.onerror = function (msg, url) {
   if (typeof msg === 'string' && (msg.includes('webpage_content_reporter.js') || (url && url.includes('chrome-extension')))) {
-    console.warn('[Global] Silenciado erro de sintaxe de extensão via backup handler.');
     return true; // Prevents default error firing
   }
   return false;

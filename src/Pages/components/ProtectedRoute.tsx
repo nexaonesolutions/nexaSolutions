@@ -10,10 +10,12 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly, clientOnly, allowGuest }) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isProfileLoaded } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  // Somente mostramos o loading de tela cheia se o perfil ainda não foi carregado pela primeira vez.
+  // Durante o login/cadastro, o isLoading global pode mudar, mas não queremos desmontar a página.
+  if (isLoading && !isProfileLoaded) {
     return (
       <div className="min-h-screen bg-nexa-dark flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nexa-primary"></div>

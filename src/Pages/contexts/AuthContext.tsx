@@ -272,6 +272,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string, rememberMe: boolean = false) => {
     setError(null);
+    setIsLoading(true);
     try {
       // Configura a persistência antes do login baseando-se no checkbox
       await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
@@ -298,11 +299,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setError(err.message);
       throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
     setError(null);
+    setIsLoading(true);
     try {
       const cleanCpf = cpf.replace(/[^\d]+/g, '');
       const cleanPhone = phone.replace(/[^\d]+/g, '');
@@ -318,6 +322,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.warn("[NEXA] Criação de conta bloqueada devido a falha de validação ou erro de rede.");
       setError(err.message);
       throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 

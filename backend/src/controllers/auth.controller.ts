@@ -49,21 +49,24 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
   try {
     const usersRef = adminDb.collection('users');
 
-    // 1. Verificações de Unicidade
-    const existingEmailSnap = await usersRef.where('email', '==', email).get();
+    // 1. Verificações de Unicidade em Paralelo
+    const cleanedCpf = cpf.replace(/[^\d]+/g, '');
+    const cleanedPhone = phone.replace(/[^\d]+/g, '');
+
+    const [existingEmailSnap, existingCpfSnap, existingPhoneSnap] = await Promise.all([
+      usersRef.where('email', '==', email).get(),
+      usersRef.where('cpf', '==', cleanedCpf).get(),
+      usersRef.where('phone', '==', cleanedPhone).get()
+    ]);
+
     if (!existingEmailSnap.empty) {
       return res.status(409).json({ message: 'Email already in use' });
     }
 
-    const cleanedCpf = cpf.replace(/[^\d]+/g, '');
-    const cleanedPhone = phone.replace(/[^\d]+/g, '');
-
-    const existingCpfSnap = await usersRef.where('cpf', '==', cleanedCpf).get();
     if (!existingCpfSnap.empty) {
       return res.status(409).json({ message: 'CPF already in use' });
     }
 
-    const existingPhoneSnap = await usersRef.where('phone', '==', cleanedPhone).get();
     if (!existingPhoneSnap.empty) {
       return res.status(409).json({ message: 'Phone already in use' });
     }

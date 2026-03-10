@@ -168,7 +168,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       setOrders(userOrders);
     } catch (err) {
-      console.error("Failed to fetch orders:", err);
+      console.warn("[NEXA] Tentativa de buscar histórico de compras falhou silenciosamente.");
       setOrders([]);
     }
   }, [token]);
@@ -180,7 +180,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(prev => prev ? { ...prev, ...data } : null);
       return true;
     } catch (err) {
-      console.error("Update profile error:", err);
+      console.warn("[NEXA] Atualização de perfil falhou silenciosamente no servidor.");
       return false;
     }
   }, []);
@@ -198,7 +198,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       return true;
     } catch (err) {
-      console.error("Change password error:", err);
+      console.warn("[NEXA] Falha silenciosa ao tentar atualizar credenciais.");
       return false;
     }
   }, [token]);
@@ -279,7 +279,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
     } catch (err: any) {
-      console.warn("Firebase Login Error, checking backend fallback...", err.code);
+      console.warn("[NEXA] Tentativa principal de entrada com credenciais inválidas. Verificando rota secundária.");
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email') {
         try {
           // Legacy migration fallback: Backend will verify hash and sync with Firebase Auth
@@ -315,7 +315,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
     } catch (err: any) {
-      console.error("Register Error:", err);
+      console.warn("[NEXA] Criação de conta bloqueada devido a falha de validação ou erro de rede.");
       setError(err.message);
       throw err;
     }

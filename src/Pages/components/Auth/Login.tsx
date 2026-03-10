@@ -51,7 +51,7 @@ const Login: React.FC = () => {
       await login(trimmedEmail, password, rememberMe);
       // Redirection is now handled by the useEffect above
     } catch (err: any) {
-      console.error("Login component error:", err);
+      console.warn("[NEXA] Falha na tentativa de login local.");
       const serverMessage = err.message || "auth.loginFailed";
       const mapped = mapServerErrorToKey(serverMessage);
 

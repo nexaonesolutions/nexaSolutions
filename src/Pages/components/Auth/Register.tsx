@@ -67,7 +67,7 @@ const Register: React.FC = () => {
       await register(name, email, password, cpf, phone);
       setSuccess(t('auth.registrationSuccess'));
     } catch (err: any) {
-      console.error("Register component error:", err);
+      console.warn("[NEXA] Falha na tentativa de cadastro local.");
       const msg = err.message || "auth.registrationFailed";
       const mapped = mapServerErrorToKey(msg);
       setError(mapped ? mapped : msg);

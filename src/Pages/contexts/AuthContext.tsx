@@ -6,6 +6,9 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -55,7 +58,7 @@ interface Order {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<any>;
   register: (name: string, email: string, password: string, cpf: string, phone: string) => Promise<any>;
   logout: () => void;
   forgotPassword: (email: string) => Promise<void>;
@@ -267,9 +270,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rememberMe: boolean = false) => {
     setError(null);
     try {
+      // Configura a persistência antes do login baseando-se no checkbox
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
     } catch (err: any) {

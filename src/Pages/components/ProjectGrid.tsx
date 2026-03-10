@@ -21,9 +21,6 @@ export const ProjectGrid: React.FC<ProjectGridProps> = ({ children }) => {
     <motion.div
       className={styles.grid}
       variants={gridContainerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
     >
       {children}
     </motion.div>

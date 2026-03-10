@@ -16,9 +16,24 @@
       "es": "Una sofisticada plataforma de comercio electrónico para una marca de cosméticos de lujo. El objetivo era crear una experiencia de compra visualmente impresionante e intuitiva, con imágenes de productos de alta calidad y un proceso de pago perfecto."
     },
     "highlights": {
-      "en": ["Advanced UI/UX Design", "Stripe Integration", "Optimized for performance and SEO", "Fully responsive"],
-      "pt": ["Design UI/UX Avançado", "Integração com Stripe", "Otimizado para desempenho e SEO", "Totalmente responsivo"],
-      "es": ["Diseño UI/UX Avanzado", "Integración con Stripe", "Optimizado para rendimiento y SEO", "Totalmente responsivo"]
+      "en": [
+        "Advanced UI/UX Design",
+        "Stripe Integration",
+        "Optimized for performance and SEO",
+        "Fully responsive"
+      ],
+      "pt": [
+        "Design UI/UX Avançado",
+        "Integração com Stripe",
+        "Otimizado para desempenho e SEO",
+        "Totalmente responsivo"
+      ],
+      "es": [
+        "Diseño UI/UX Avanzado",
+        "Integración con Stripe",
+        "Optimizado para rendimiento y SEO",
+        "Totalmente responsivo"
+      ]
     }
   },
   {
@@ -37,9 +52,24 @@
       "es": "Un agregador de servicios de streaming que permite a los usuarios buscar películas y programas de televisión en múltiples plataformas. Creamos un potente motor de búsqueda y una interfaz limpia y fácil de usar."
     },
     "highlights": {
-      "en": ["Real-time API Integration", "Cross-platform search", "User authentication", "Personalized watchlists"],
-      "pt": ["Integração de API em tempo real", "Pesquisa multiplataforma", "Autenticação de usuário", "Listas de observação personalizadas"],
-      "es": ["Integración de API en tiempo real", "Búsqueda multiplataforma", "Autenticación de usuario", "Listas de seguimiento personalizadas"]
+      "en": [
+        "Real-time API Integration",
+        "Cross-platform search",
+        "User authentication",
+        "Personalized watchlists"
+      ],
+      "pt": [
+        "Integração de API em tempo real",
+        "Pesquisa multiplataforma",
+        "Autenticação de usuário",
+        "Listas de observação personalizadas"
+      ],
+      "es": [
+        "Integración de API en tiempo real",
+        "Búsqueda multiplataforma",
+        "Autenticación de usuario",
+        "Listas de seguimiento personalizadas"
+      ]
     }
   },
   {
@@ -58,9 +88,24 @@
       "es": "Un sitio web exclusivo para una marca de joyería de alta gama. El diseño enfatiza la elegancia y el lujo, con vistas detalladas de productos en 360 grados y una función de personalización."
     },
     "highlights": {
-      "en": ["360-degree Product Viewer", "Customization feature", "Luxury branding", "Secure online payment"],
-      "pt": ["Visualizador de produtos 360 graus", "Recurso de personalização", "Marca de luxo", "Pagamento online seguro"],
-      "es": ["Visor de productos de 360 grados", "Función de personalización", "Marca de lujo", "Pago seguro en línea"]
+      "en": [
+        "360-degree Product Viewer",
+        "Customization feature",
+        "Luxury branding",
+        "Secure online payment"
+      ],
+      "pt": [
+        "Visualizador de produtos 360 graus",
+        "Recurso de personalização",
+        "Marca de luxo",
+        "Pagamento online seguro"
+      ],
+      "es": [
+        "Visor de productos de 360 grados",
+        "Función de personalización",
+        "Marca de lujo",
+        "Pago seguro en línea"
+      ]
     }
   },
   {
@@ -79,9 +124,24 @@
       "es": "Un sitio web corporativo para una empresa de consultoría de negocios. El sitio proyecta profesionalismo y autoridad, con estudios de caso, testimonios de clientes y una clara llamada a la acción."
     },
     "highlights": {
-      "en": ["Professional and clean design", "Content Management System (CMS)", "Blog integration", "Lead generation forms"],
-      "pt": ["Design profissional e limpo", "Sistema de Gerenciamento de Conteúdo (CMS)", "Integração de blog", "Formulários de geração de leads"],
-      "es": ["Diseño profesional y limpio", "Sistema de gestión de contenidos (CMS)", "Integración de blog", "Formularios de generación de leads"]
+      "en": [
+        "Professional and clean design",
+        "Content Management System (CMS)",
+        "Blog integration",
+        "Lead generation forms"
+      ],
+      "pt": [
+        "Design profissional e limpo",
+        "Sistema de Gerenciamento de Conteúdo (CMS)",
+        "Integração de blog",
+        "Formulários de geração de leads"
+      ],
+      "es": [
+        "Diseño profesional y limpio",
+        "Sistema de gestión de contenidos (CMS)",
+        "Integración de blog",
+        "Formularios de generación de leads"
+      ]
     }
   },
   {
@@ -100,9 +160,132 @@
       "es": "Un sitio web de reservas moderno y elegante para una cadena de barberías. Las características incluyen programación de citas en línea, perfiles de barberos y una galería de estilos."
     },
     "highlights": {
-      "en": ["Online booking system", "Barber profiles", "Service management", "Photo gallery"],
-      "pt": ["Sistema de agendamento online", "Perfis de barbeiros", "Gerenciamento de serviços", "Galeria de fotos"],
-      "es": ["Sistema de reservas en línea", "Perfiles de barberos", "Gestión de servicios", "Galería de fotos"]
+      "en": [
+        "Online booking system",
+        "Barber profiles",
+        "Service management",
+        "Photo gallery"
+      ],
+      "pt": [
+        "Sistema de agendamento online",
+        "Perfis de barbeiros",
+        "Gerenciamento de serviços",
+        "Galeria de fotos"
+      ],
+      "es": [
+        "Sistema de reservas en línea",
+        "Perfiles de barberos",
+        "Gestión de servicios",
+        "Galería de fotos"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "title": "Nexa Management",
+    "category": {
+      "en": "Business",
+      "pt": "Negócios",
+      "es": "Negocios"
+    },
+    "imageUrl": "/Portfolio/Management.png",
+    "liveUrl": "#",
+    "description": {
+      "en": "A comprehensive business management dashboard designed for optimizing internal workflows and data visualization.",
+      "pt": "Um dashboard abrangente de gestão empresarial projetado para otimizar fluxos de trabalho internos e visualização de dados.",
+      "es": "Un panel de control integral de gestión empresarial diseñado para optimizar los flujos de trabajo internos y la visualización de datos."
+    },
+    "highlights": {
+      "en": [
+        "Data Analytics",
+        "Workflow Automation",
+        "Role-based access",
+        "Dark mode UI"
+      ],
+      "pt": [
+        "Análise de Dados",
+        "Automação de Fluxo de Trabalho",
+        "Acesso baseado em funções",
+        "Interface Dark Mode"
+      ],
+      "es": [
+        "Análisis de Datos",
+        "Automatización de Fluxos de Trabajo",
+        "Acceso basado en roles",
+        "Interfaz Dark Mode"
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "title": "Odonto Nexa",
+    "category": {
+      "en": "Medical",
+      "pt": "Médico",
+      "es": "Médico"
+    },
+    "imageUrl": "/Portfolio/Odonto.png",
+    "liveUrl": "#",
+    "description": {
+      "en": "A specialized management system for dental clinics, featuring patient scheduling, history tracking, and financial management.",
+      "pt": "Um sistema de gestão especializado para clínicas odontológicas, incluindo agendamento de pacientes, acompanhamento de histórico e gestão financeira.",
+      "es": "Un sistema de gestión especializado para clínicas dentales, que inclui programación de pacientes, seguimiento de historial y gestión financiera."
+    },
+    "highlights": {
+      "en": [
+        "Appointment Scheduling",
+        "Electronic Health Records",
+        "Financial Module",
+        "Patient Portal"
+      ],
+      "pt": [
+        "Agendamento de Consultas",
+        "Prontuários Eletrônicos",
+        "Módulo Financeiro",
+        "Portal do Paciente"
+      ],
+      "es": [
+        "Programación de Citas",
+        "Registros Médicos Electrónicos",
+        "Módulo Financiero",
+        "Portal del Paciente"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "title": "Nexa Kanban",
+    "category": {
+      "en": "Business",
+      "pt": "Negócios",
+      "es": "Negocios"
+    },
+    "imageUrl": "/Portfolio/PrintKanban.png",
+    "liveUrl": "#",
+    "description": {
+      "en": "A dynamic Kanban board for task management and team collaboration, with real-time updates and customizable workflows.",
+      "pt": "Um quadro Kanban dinâmico para gestão de tarefas e colaboração em equipe, com atualizações em tempo real e fluxos de trabalho personalizáveis.",
+      "es": "Un tablero Kanban dinámico para la gestión de tareas y la colaboración en equipo, con actualizaciones en tiempo real y flujos de trabajo personalizables."
+    },
+    "highlights": {
+      "en": [
+        "Drag-and-drop interface",
+        "Real-time sync",
+        "Task prioritization",
+        "Team analytics"
+      ],
+      "pt": [
+        "Interface Drag-and-drop",
+        "Sincronização em tempo real",
+        "Priorização de tarefas",
+        "Análise de equipe"
+      ],
+      "es": [
+        "Interfaz de arrastrar y soltar",
+        "Sincronización en tiempo real",
+        "Priorización de tareas",
+        "Análisis de equipo"
+      ]
     }
   }
 ]

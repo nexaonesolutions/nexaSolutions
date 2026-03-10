@@ -108,9 +108,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Monitor auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setIsLoading(true);
-      setIsProfileLoaded(false);
+      // Only set global isLoading to true if we don't have a user yet and it's the initial load
+      // or if we're explicitly waiting for a profile.
+      // Important: don't set isLoading(true) here if we're in the middle of a login attempt
+      // that might fail, to avoid ProtectedRoute remounting.
+
       if (firebaseUser) {
+        setIsLoading(true); // Still show loading while fetching doc
+        setIsProfileLoaded(false);
         const isNexaAdmin = firebaseUser.email === 'nexa2114@gmail.com';
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
@@ -125,7 +130,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             phone: userData.phone
           });
         } else {
-          // Fallback if doc doesn't exist yet
           setUser({
             id: firebaseUser.uid,
             email: firebaseUser.email || '',
@@ -139,10 +143,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         setUser(null);
         setToken(null);
-        setIsProfileLoaded(true); // Technically loaded (as null)
+        setIsProfileLoaded(true);
       }
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
       setIsLoading(false);
     });
 

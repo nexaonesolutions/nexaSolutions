@@ -203,7 +203,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Função genérica para chamadas à API
   const apiCall = async (endpoint: string, options: any = {}) => {
-    setIsLoading(true);
     setError(null);
     // Garante que não haja barras duplicadas se API_URL terminar com /
     const baseUrl = API_URL.replace(/\/$/, '');
@@ -265,13 +264,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const message = err.message;
       setError(message);
       throw err; // Re-throw para que o componente trate localmente também
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
     setError(null);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -296,13 +292,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setError(err.message);
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
-    setIsLoading(true);
     setError(null);
     try {
       const cleanCpf = cpf.replace(/[^\d]+/g, '');
@@ -319,8 +312,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Register Error:", err);
       setError(err.message);
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 

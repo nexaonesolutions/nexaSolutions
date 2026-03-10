@@ -48,24 +48,17 @@ const Login: React.FC = () => {
     setIsLoading(true); // Set loading to true on submission
     try {
       const trimmedEmail = email.trim().toLowerCase();
-      const trimmedPassword = password;
-
-      if (!trimmedPassword) {
-        setError(t('auth.password') || 'Password is required');
-        setIsLoading(false);
-        return;
-      }
-
-      await login(trimmedEmail, trimmedPassword, rememberMe);
+      await login(trimmedEmail, password, rememberMe);
       // Redirection is now handled by the useEffect above
     } catch (err: any) {
-      // Prefer server-provided message when available. Map to translation key when possible.
-      const serverMessage: string | null = err?.message || null;
-      if (serverMessage) {
-        const mapped = mapServerErrorToKey(serverMessage);
-        if (mapped) setError(t(mapped)); else setError(serverMessage);
+      console.error("Login component error:", err);
+      const serverMessage = err.message || "auth.loginFailed";
+      const mapped = mapServerErrorToKey(serverMessage);
+
+      if (mapped) {
+        setError(t(mapped));
       } else {
-        setError(t('auth.loginFailed'));
+        setError(serverMessage);
       }
     } finally {
       setIsLoading(false); // Set loading to false after submission (success or failure)
@@ -125,7 +118,10 @@ const Login: React.FC = () => {
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm mt-2"
                 placeholder={t('auth.password')}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
               />
             </div>
           </div>

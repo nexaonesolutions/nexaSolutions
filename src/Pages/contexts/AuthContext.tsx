@@ -244,7 +244,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const response = await fetch(url, finalOptions);
 
-      // Tenta ler como texto primeiro para evitar erros de parse em respostas vazias ou HTML
       const text = await response.text();
       let data;
       try {
@@ -254,18 +253,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Ocorreu um erro.');
+        // Se o status for 401 ou 403, mapeamos para login failed se não houver mensagem específica
+        const errorMsg = data.message || data.error || (response.status === 401 ? 'Unauthorized' : 'Ocorreu um erro.');
+        throw new Error(errorMsg);
       }
 
       return data;
     } catch (err: any) {
-      // API call failed
-      let message = err.message;
-      if (message === 'Failed to fetch' || message.includes('NetworkError') || message.includes('Connection refused')) {
-        message = `Não foi possível conectar ao servidor em ${url}. Verifique se o backend está rodando.`;
-      }
+      const message = err.message;
       setError(message);
-      throw new Error(message);
+      throw err; // Re-throw para que o componente trate localmente também
     } finally {
       setIsLoading(false);
     }
@@ -276,10 +273,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Data is handled by onAuthStateChanged
       return userCredential.user;
     } catch (err: any) {
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      console.warn("Firebase Login Error, checking backend fallback...", err.code);
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email') {
         try {
           // Legacy migration fallback: Backend will verify hash and sync with Firebase Auth
           await apiCall('/api/auth/login', {
@@ -290,15 +287,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const retryCredential = await signInWithEmailAndPassword(auth, email, password);
           return retryCredential.user;
         } catch (backendErr: any) {
-          const errMsg = backendErr.message || "Falha no login. Verifique suas credenciais.";
-          setError(errMsg);
-          throw new Error(errMsg);
+          setError(backendErr.message);
+          throw backendErr;
         }
       }
 
-      let msg = "Falha no login. Verifique suas credenciais.";
-      setError(msg);
-      throw new Error(msg);
+      setError(err.message);
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -311,44 +306,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const cleanCpf = cpf.replace(/[^\d]+/g, '');
       const cleanPhone = phone.replace(/[^\d]+/g, '');
 
-      // Invoca a API de Registration no Backend para burlar as Firebase Security Rules de Read unauthenticated
       await apiCall('/api/auth/register', {
         method: 'POST',
         body: { name, email, password, cpf: cleanCpf, phone: cleanPhone }
       });
 
-      // Após o backend criar de forma segura o registro (Auth + Firestore), logamos o usuário na sessão do Browser
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
       return userCredential.user;
     } catch (err: any) {
-      console.error("Firebase Register Error:", err);
-      let msgKey = "auth.registrationFailed";
-      const errMsg = err.message || "";
-
-      // Mapeamento de mensagens do Backend para chaves de tradução
-      if (errMsg === 'Email already in use' || errMsg === 'User already exists' || err.code === 'auth/email-already-in-use') {
-        msgKey = "auth.emailAlreadyInUse";
-      } else if (errMsg === 'CPF already in use') {
-        msgKey = "auth.cpfAlreadyInUse";
-      } else if (errMsg === 'Phone already in use') {
-        msgKey = "auth.phoneAlreadyInUse";
-      } else if (errMsg === 'Invalid CPF') {
-        msgKey = "auth.invalidCpf";
-      } else if (errMsg === 'Invalid phone number format') {
-        msgKey = "auth.invalidPhone";
-      } else if (errMsg === 'Erro ao criar autenticação') {
-        msgKey = "auth.authServiceError";
-      } else if (err.code === 'auth/weak-password' || errMsg.includes('Password must be at least 8 characters')) {
-        msgKey = "auth.invalidPasswordFormat";
-      } else if (err.code === 'auth/invalid-email') {
-        msgKey = "auth.invalidEmailFormat";
-      } else if (errMsg.includes('Failed to fetch') || errMsg.includes('network error')) {
-        msgKey = "auth.networkError";
-      }
-
-      setError(msgKey);
-      throw new Error(msgKey);
+      console.error("Register Error:", err);
+      setError(err.message);
+      throw err;
     } finally {
       setIsLoading(false);
     }

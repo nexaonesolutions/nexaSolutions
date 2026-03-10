@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // simple formatting helpers instead.
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import mapServerErrorToKey from '../../../../utils/serverMessageMap';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -22,12 +23,18 @@ const Register: React.FC = () => {
   // Robust redirection logic using useEffect
   useEffect(() => {
     if (isProfileLoaded && user) {
-      // If registration was just successful, we might want to go to /login or /
-      // But usually, AuthContext auto-logs in after register.
-      // Let's redirect to home (or profile) once loaded.
-      navigate('/', { replace: true });
+      // Se houve sucesso, esperamos o delay para o usuário ler a mensagem
+      if (success) {
+        const timer = setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 2000);
+        return () => clearTimeout(timer);
+      } else {
+        // Redirecionamento imediato se já estiver logado (ex: acessou a página logado)
+        navigate('/', { replace: true });
+      }
     }
-  }, [user, isProfileLoaded, navigate]);
+  }, [user, isProfileLoaded, navigate, success]);
 
   const formatCpf = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -59,10 +66,11 @@ const Register: React.FC = () => {
       // Pass new fields to the register function in the correct order
       await register(name, email, password, cpf, phone);
       setSuccess(t('auth.registrationSuccess'));
-      // Redirection is now handled by the useEffect above
     } catch (err: any) {
-      // The error 'err' is thrown from AuthContext, and its message is the one from the backend.
-      setError(err.message || t('auth.networkError'));
+      console.error("Register component error:", err);
+      const msg = err.message || "auth.registrationFailed";
+      const mapped = mapServerErrorToKey(msg);
+      setError(mapped ? mapped : msg);
     }
   };
 
@@ -104,7 +112,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.name')}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (error) setError(null);
+                }}
               />
             </div>
             {/* CPF Input */}
@@ -120,7 +131,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.cpf')}
                 value={cpf}
-                onChange={(e) => setCpf(formatCpf(e.target.value))}
+                onChange={(e) => {
+                  setCpf(formatCpf(e.target.value));
+                  if (error) setError(null);
+                }}
               />
             </div>
             {/* Phone Input */}
@@ -136,7 +150,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.phone')}
                 value={phone}
-                onChange={(e) => setPhone(formatPhone(e.target.value))}
+                onChange={(e) => {
+                  setPhone(formatPhone(e.target.value));
+                  if (error) setError(null);
+                }}
               />
             </div>
             {/* Existing Email Input */}
@@ -153,7 +170,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.emailAddress')}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(null);
+                }}
               />
             </div>
             {/* Existing Password Input */}
@@ -170,7 +190,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.password')}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
               />
             </div>
             {/* Existing Confirm Password Input */}
@@ -187,7 +210,10 @@ const Register: React.FC = () => {
                 className="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-2 focus:ring-nexa-primary focus:border-nexa-primary focus:z-10 sm:text-sm"
                 placeholder={t('auth.confirmPassword')}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (error) setError(null);
+                }}
               />
             </div>
           </div>

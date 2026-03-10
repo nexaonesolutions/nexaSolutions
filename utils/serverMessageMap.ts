@@ -27,19 +27,30 @@ export const mapServerErrorToKey = (msg?: string): string | null => {
     return 'auth.phoneAlreadyInUse';
   }
 
-  // Erros de Formato
-  if (m.includes('password') && (m.includes('weak') || m.includes('8 characters'))) {
+  // Erros de Formato (Mapeados das mensagens do backend)
+  if (m.includes('password must be at least 8 characters')) {
     return 'auth.invalidPasswordFormat';
   }
-  if (m.includes('invalid') && m.includes('cpf')) {
+  if (m.includes('invalid cpf')) {
     return 'auth.invalidCpf';
   }
+  if (m.includes('invalid phone number format')) {
+    return 'auth.invalid_phone'; // Corrigido para bater com a chave da translations.ts
+  }
+  if (m.includes('email, password, cpf, and phone are required')) {
+    return 'auth.loginFailed';
+  }
+
+  // Erros de Token e Sessão
   if (m.includes('token') && (m.includes('invalid') || m.includes('expired'))) {
     return 'auth.invalid_token';
   }
+  if (m.includes('firebase not initialized')) {
+    return 'auth.authServiceError';
+  }
 
   // Erros de Rede
-  if (m.includes('failed to fetch') || m.includes('network error') || m.includes('connection refused')) {
+  if (m.includes('failed to fetch') || m.includes('network error') || m.includes('connection refused') || m.includes('serviço de autenticação indiponível')) {
     return 'auth.networkError';
   }
 

@@ -248,34 +248,30 @@ export const forgotPassword = [rateLimitAndSanitize, async (req: Request, res: R
     await batch.commit();
 
     // Send the actual code via Nodemailer
-    try {
-      const { sendEmail } = await import('../services/email.service');
+    const { sendEmail } = await import('../services/email.service');
 
-      const emailBody = `
-        <div style="font-family: Arial, sans-serif; background-color: #f4f4f5; padding: 40px; text-align: center;">
-          <div style="background-color: #ffffff; max-width: 500px; margin: 0 auto; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="color: #000; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Redefinição de Senha</h2>
-            <p style="color: #52525b; font-size: 16px; margin-bottom: 30px;">
-               Recebemos uma solicitação para redefinir a senha da sua conta na Nexa Solutions. Copie o código abaixo e cole no aplicativo para continuar:
-            </p>
-            <div style="background-color: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
-               <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #0284c7;">${code}</span>
-            </div>
-            <p style="color: #a1a1aa; font-size: 14px; margin-bottom: 10px;">
-               Este código expira em 15 minutos. Se você não solicitou, apenas ignore este e-mail.
-            </p>
+    const emailBody = `
+      <div style="font-family: Arial, sans-serif; background-color: #f4f4f5; padding: 40px; text-align: center;">
+        <div style="background-color: #ffffff; max-width: 500px; margin: 0 auto; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <h2 style="color: #000; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Redefinição de Senha</h2>
+          <p style="color: #52525b; font-size: 16px; margin-bottom: 30px;">
+             Recebemos uma solicitação para redefinir a senha da sua conta na Nexa Solutions. Copie o código abaixo e cole no aplicativo para continuar:
+          </p>
+          <div style="background-color: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+             <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #0284c7;">${code}</span>
           </div>
+          <p style="color: #a1a1aa; font-size: 14px; margin-bottom: 10px;">
+             Este código expira em 15 minutos. Se você não solicitou, apenas ignore este e-mail.
+          </p>
         </div>
-      `;
+      </div>
+    `;
 
-      await sendEmail({
-        to: user.email,
-        subject: 'Seu Código de Recuperação - Nexa Solutions',
-        body: emailBody,
-      });
-    } catch (e) {
-      console.error('Failed to send SMTP email (check credentials):', e);
-    }
+    sendEmail({
+      to: user.email,
+      subject: 'Seu Código de Recuperação - Nexa Solutions',
+      body: emailBody,
+    }).catch(e => console.error('Failed to send SMTP email (check credentials):', e));
 
     return res.status(200).json({ message: 'Se o e-mail existir, um código foi enviado.' });
   } catch (err: any) {

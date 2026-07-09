@@ -23,6 +23,7 @@ import NotFoundPage from '@/src/Pages/components/NotFoundPage';
 import SuccessPage from '@/src/Pages/components/SuccessPage';
 import ChatWidget from '@/src/Pages/components/ChatWidget';
 import TermsOfUse from '@/src/Pages/components/Legal/TermsOfUse';
+import CookieBanner from '@/src/Pages/components/CookieBanner';
 
 
 
@@ -133,6 +134,7 @@ const AppContent: React.FC = () => {
         onGoToPricing={handleGoToPricing}
       />
       {!isAdminPage && <ChatWidget />}
+      <CookieBanner />
     </div>
   );
 };

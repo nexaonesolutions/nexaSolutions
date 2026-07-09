@@ -267,11 +267,16 @@ export const forgotPassword = [rateLimitAndSanitize, async (req: Request, res: R
       </div>
     `;
 
-    sendEmail({
-      to: user.email,
-      subject: 'Seu Código de Recuperação - Nexa Solutions',
-      body: emailBody,
-    }).catch(e => console.error('Failed to send SMTP email (check credentials):', e));
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Seu Código de Recuperação - Nexa Solutions',
+        body: emailBody,
+      });
+    } catch (e: any) {
+      console.error('Failed to send SMTP email:', e);
+      return res.status(500).json({ message: 'Erro no servidor de e-mail (SMTP): ' + e.message });
+    }
 
     return res.status(200).json({ message: 'Se o e-mail existir, um código foi enviado.' });
   } catch (err: any) {

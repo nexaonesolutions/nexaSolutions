@@ -10,7 +10,7 @@ export const CTA: React.FC = () => {
   return (
     <section className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-nexa-primary/10 to-nexa-secondary/10"></div>
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20"></div>
       
       <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
         <h2 className="text-4xl md:text-6xl font-extrabold mb-8 leading-tight">

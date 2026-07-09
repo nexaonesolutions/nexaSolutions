@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Fix ENETUNREACH errors in cloud environments (like Render) that don't support external IPv6
+dns.setDefaultResultOrder('ipv4first');
 
 // Configure the transport layer using Gmail SMTP
 const transporter = nodemailer.createTransport({

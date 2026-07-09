@@ -4,15 +4,20 @@ import dns from 'dns';
 // Fix ENETUNREACH errors in cloud environments (like Render) that don't support external IPv6
 dns.setDefaultResultOrder('ipv4first');
 
-// Configure the transport layer using Gmail SMTP
+// Configure the transport layer using Gmail SMTP - fully optimized for Render
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: 587, // Hardcoded to 587 (STARTTLS) to bypass Render firewall and ignore ENV variable
-  secure: false, // Must be false for 587
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  // Bypasses Render's lack of IPv6 support by forcing IPv4 at the socket level
+  family: 4, 
+  // Prevent TLS connection issues on cloud containers
+  tls: { rejectUnauthorized: false }
 });
 
 interface EmailDetails {

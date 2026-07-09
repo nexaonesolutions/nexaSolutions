@@ -17,6 +17,12 @@ const app = express();
 // Default to 4002 (changeable via process.env.PORT)
 const PORT = process.env.PORT || 4002;
 
+// CRITICAL: Trust the first proxy (Render, Vercel, etc.) so that req.ip
+// returns the real client IP from the X-Forwarded-For header.
+// Without this, ALL users share the same IP (the internal proxy IP),
+// and one user's lockout blocks everyone on the site.
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(helmet());
 

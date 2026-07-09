@@ -4,7 +4,7 @@ import { adminAuth, adminDb } from '../services/firebase-admin.service';
 import dotenv from 'dotenv';
 import { isValidCpf, isValidPassword, isValidPhone } from '../services/validation.service';
 import { hashPassword, comparePassword } from '../services/security.service';
-import { rateLimitAndSanitize, resetLoginAttempts } from '../middleware/sanitize-middleware';
+import { rateLimitAndSanitize, resetLoginAttempts, incrementLoginFailure } from '../middleware/sanitize-middleware';
 import crypto from 'crypto';
 
 dotenv.config();
@@ -148,6 +148,8 @@ export const login = [rateLimitAndSanitize, async (req: Request, res: Response) 
     const usersSnap = await adminDb.collection('users').where('email', '==', normalizedEmail).limit(1).get();
     if (usersSnap.empty) {
       console.log(`[Login Fallback] User not found for email: ${normalizedEmail}`);
+      // Count failure by email so only THIS email gets locked, not the whole IP
+      incrementLoginFailure(normalizedEmail, ip || 'unknown');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -156,9 +158,13 @@ export const login = [rateLimitAndSanitize, async (req: Request, res: Response) 
 
     if (!user.password || !(await comparePassword(password, user.password))) {
       console.log(`[Login Fallback] Password mismatch for email: ${normalizedEmail}`);
+      // Count failure by email so only THIS email gets locked, not the whole IP
+      incrementLoginFailure(normalizedEmail, ip || 'unknown');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Clear counters for both email and IP on successful login
+    resetLoginAttempts(normalizedEmail);
     resetLoginAttempts(ip || 'unknown');
 
     // SYNC WITH FIREBASE AUTH

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { API_URL } from '@/utils/apiConfig';
-import { Mail, KeyRound, Lock, ArrowRight, CheckCircle2, ChevronLeft } from 'lucide-react';
+import { Mail, KeyRound, Lock, ArrowRight, CheckCircle2, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 
 type Step = 'email' | 'code' | 'password' | 'success';
 
@@ -18,6 +18,7 @@ const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [resetToken, setResetToken] = useState('');
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -263,13 +264,20 @@ const ForgotPasswordPage = () => {
                       <Lock className="h-5 w-5 text-gray-500 group-focus-within:text-emerald-400 transition-colors" />
                     </div>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       required
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="block w-full pl-11 pr-4 py-3 bg-gray-950/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all sm:text-sm"
+                      className="block w-full pl-11 pr-12 py-3 bg-gray-950/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all sm:text-sm"
                       placeholder="••••••••"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-400 focus:outline-none transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
                   </div>
                   <p className="mt-2 text-xs text-gray-500">Pelo menos 8 caracteres com letras maiúsculas e minúsculas.</p>
                 </div>

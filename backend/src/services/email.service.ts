@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM_ADDRESS = process.env.EMAIL_FROM
   ? `Nexa Solutions <${process.env.EMAIL_FROM}>`
-  : 'Nexa Solutions <onboarding@resend.dev>';
+  : 'Nexa Solutions <suporte@nexasolutions.store>';
 
 interface EmailDetails {
   to: string;

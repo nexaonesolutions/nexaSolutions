@@ -9,7 +9,9 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  User as FirebaseUser
+  User as FirebaseUser,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { API_URL } from '../../../utils/apiConfig';
@@ -74,6 +76,7 @@ interface AuthContextType {
   changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>; // Handled via email in Firebase usually, but can be done
   loadUser: () => Promise<void>;
   isProfileLoaded: boolean;
+  loginWithGoogle: () => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -304,6 +307,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const firebaseUser = userCredential.user;
+      
+      // Auto-provision user document in Firestore if it doesn't exist
+      const userDocRef = doc(db, 'users', firebaseUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          name: firebaseUser.displayName || '',
+          email: firebaseUser.email || '',
+          role: 'client',
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      return firebaseUser;
+    } catch (err: any) {
+      console.warn("[NEXA] Login com Google falhou:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const register = async (name: string, email: string, password: string, cpf: string, phone: string) => {
     setError(null);
     setIsLoading(true);
@@ -363,6 +397,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     changePassword,
     loadUser,
     isProfileLoaded,
+    loginWithGoogle,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -15,6 +16,9 @@ const ProfilePanel: React.FC = () => {
   const [oldPassword, setOldPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
+  const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState<boolean>(false);
 
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
@@ -217,46 +221,73 @@ const ProfilePanel: React.FC = () => {
             <label htmlFor="old-password" className="block text-sm font-medium text-gray-300">
               {t('auth.oldPassword')}
             </label>
-            <input
-              id="old-password"
-              name="old-password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                id="old-password"
+                name="old-password"
+                type={showOldPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowOldPassword(!showOldPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white mt-1 focus:outline-none"
+              >
+                {showOldPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label htmlFor="new-password" className="block text-sm font-medium text-gray-300">
               {t('auth.newPassword')}
             </label>
-            <input
-              id="new-password"
-              name="new-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                id="new-password"
+                name="new-password"
+                type={showNewPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white mt-1 focus:outline-none"
+              >
+                {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
           <div>
             <label htmlFor="confirm-new-password" className="block text-sm font-medium text-gray-300">
               {t('auth.confirmNewPassword')}
             </label>
-            <input
-              id="confirm-new-password"
-              name="confirm-new-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                id="confirm-new-password"
+                name="confirm-new-password"
+                type={showConfirmNewPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm placeholder-gray-500 text-white bg-gray-700 focus:outline-none focus:ring-nexa-primary focus:border-nexa-primary sm:text-sm"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white mt-1 focus:outline-none"
+              >
+                {showConfirmNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
 
           {passwordError && (

@@ -175,6 +175,8 @@ export const translations = {
       'startNow': 'Começar Agora'
     },
     'auth': {
+      'googleSignIn': 'Entrar com o Google',
+      'popupClosed': 'O pop-up de login foi fechado antes de concluir.',
       'login': 'Fazer Login',
       'logout': 'Sair',
       'loading': 'Carregando...',
@@ -496,6 +498,8 @@ export const translations = {
       'startNow': 'Start Now'
     },
     'auth': {
+      'googleSignIn': 'Sign in with Google',
+      'popupClosed': 'The sign-in popup was closed before completion.',
       'login': 'Login',
       'logout': 'Logout',
       'loading': 'Loading...',
@@ -844,6 +848,8 @@ export const translations = {
       'startNow': 'Começar Agora'
     },
     'auth': {
+      'googleSignIn': 'Entrar com o Google',
+      'popupClosed': 'O pop-up de login foi fechado antes de concluir.',
       'login': 'Entrar',
       'logout': 'Sair',
       'loading': 'A carregar...',
@@ -1185,6 +1191,8 @@ export const translations = {
       'startNow': 'Comenzar Ahora'
     },
     'auth': {
+      'googleSignIn': 'Iniciar sesión con Google',
+      'popupClosed': 'La ventana emergente de inicio de sesión se cerró antes de finalizar.',
       'login': 'Iniciar Sesión',
       'logout': 'Cerrar Sesión',
       'loading': 'Cargando...',

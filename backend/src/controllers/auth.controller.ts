@@ -50,11 +50,12 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
     const usersRef = adminDb.collection('users');
 
     // 1. Verificações de Unicidade em Paralelo
+    const normalizedEmail = email.toLowerCase();
     const cleanedCpf = cpf.replace(/[^\d]+/g, '');
     const cleanedPhone = phone.replace(/[^\d]+/g, '');
 
     const [existingEmailSnap, existingCpfSnap, existingPhoneSnap] = await Promise.all([
-      usersRef.where('email', '==', email).get(),
+      usersRef.where('email', '==', normalizedEmail).get(),
       usersRef.where('cpf', '==', cleanedCpf).get(),
       usersRef.where('phone', '==', cleanedPhone).get()
     ]);
@@ -76,7 +77,7 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
     if (adminAuth) {
       try {
         const userRecord = await adminAuth.createUser({
-          email,
+          email: normalizedEmail,
           password,
           displayName: name,
         });
@@ -98,7 +99,7 @@ export const register = [rateLimitAndSanitize, async (req: Request, res: Respons
 
     const newUser: User = {
       id: newDocRef.id,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       name: name || '',
       cpf: cleanedCpf,
@@ -172,7 +173,7 @@ export const login = [rateLimitAndSanitize, async (req: Request, res: Response) 
       try {
         let fbUid;
         try {
-          const fbUser = await adminAuth.getUserByEmail(email);
+          const fbUser = await adminAuth.getUserByEmail(normalizedEmail);
           fbUid = fbUser.uid;
           await adminAuth.updateUser(fbUid, { password });
         } catch (fbErr: any) {

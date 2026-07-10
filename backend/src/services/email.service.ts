@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
 // Resend uses HTTPS (not SMTP) — works on any cloud platform including Render
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM_ADDRESS = process.env.EMAIL_FROM
   ? `Nexa Solutions <${process.env.EMAIL_FROM}>`
@@ -22,6 +22,10 @@ export const sendEmail = async (details: EmailDetails) => {
     console.warn('⚠️  RESEND_API_KEY not set. Printing email to console (dev mode):');
     console.log(`To: ${details.to}\nSubject: ${details.subject}`);
     return;
+  }
+
+  if (!resend) {
+    throw new Error('Serviço de e-mail não configurado no servidor (Falta RESEND_API_KEY).');
   }
 
   const { data, error } = await resend.emails.send({

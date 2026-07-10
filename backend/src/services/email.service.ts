@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
   family: 4, 
   // Prevent TLS connection issues on cloud containers
   tls: { rejectUnauthorized: false }
-});
+} as any);
 
 interface EmailDetails {
   to: string;

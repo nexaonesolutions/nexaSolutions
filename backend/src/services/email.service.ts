@@ -1,55 +1,43 @@
-import nodemailer from 'nodemailer';
-import dns from 'dns';
+import { Resend } from 'resend';
 
-// Fix ENETUNREACH errors in cloud environments (like Render) that don't support external IPv6
-dns.setDefaultResultOrder('ipv4first');
+// Resend uses HTTPS (not SMTP) — works on any cloud platform including Render
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Configure the transport layer using Gmail SMTP - fully optimized for Render
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // TLS via STARTTLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  // Bypasses Render's lack of IPv6 support by forcing IPv4 at the socket level
-  family: 4, 
-  // Prevent TLS connection issues on cloud containers
-  tls: { rejectUnauthorized: false }
-} as any);
+const FROM_ADDRESS = process.env.EMAIL_FROM
+  ? `Nexa Solutions <${process.env.EMAIL_FROM}>`
+  : 'Nexa Solutions <onboarding@resend.dev>';
 
 interface EmailDetails {
   to: string;
   subject: string;
-  body: string; // expects HTML content
+  body: string; // HTML content
 }
 
 /**
- * Sends a generic email (like password resets, OTPs, or confirmations)
- * @param details - The email details containing the destination, subject, and HTML body
+ * Sends a transactional email via Resend HTTP API.
+ * Does NOT use SMTP — works on Render, Vercel, Railway, etc.
  */
 export const sendEmail = async (details: EmailDetails) => {
-  // Defensive check for local environment configurations
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('⚠️ EMAIL_USER or EMAIL_PASS not set in environment variables. Simulating email send:');
-    console.log(`To: ${details.to}\nSubject: ${details.subject}\nBody: ${details.body}`);
-    return Promise.resolve();
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️  RESEND_API_KEY not set. Printing email to console (dev mode):');
+    console.log(`To: ${details.to}\nSubject: ${details.subject}`);
+    return;
   }
 
-  try {
-    const info = await transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME || 'Nexa Solutions'}" <${process.env.EMAIL_USER}>`,
-      to: details.to,
-      subject: details.subject,
-      html: details.body,
-    });
-    console.log('Email successfully sent: %s', info.messageId);
-    return info;
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
+  const { data, error } = await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: details.to,
+    subject: details.subject,
+    html: details.body,
+  });
+
+  if (error) {
+    console.error('Resend error:', error);
+    throw new Error(error.message);
   }
+
+  console.log('✅ Email sent via Resend. ID:', data?.id);
+  return data;
 };
 
 /**

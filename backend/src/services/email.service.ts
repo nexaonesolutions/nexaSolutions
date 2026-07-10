@@ -3,9 +3,12 @@ import { Resend } from 'resend';
 // Resend uses HTTPS (not SMTP) — works on any cloud platform including Render
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_ADDRESS = process.env.EMAIL_FROM
-  ? `Nexa Solutions <${process.env.EMAIL_FROM}>`
-  : 'Nexa Solutions <suporte@nexasolutions.store>';
+// Ensure EMAIL_FROM is actually a valid email format before using it
+const validEmailFrom = process.env.EMAIL_FROM && process.env.EMAIL_FROM.includes('@') 
+  ? process.env.EMAIL_FROM 
+  : 'suporte@nexasolutions.store';
+
+const FROM_ADDRESS = `Nexa Solutions <${validEmailFrom}>`;
 
 interface EmailDetails {
   to: string;

@@ -233,7 +233,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAboutUsClick, flow = 'landing'
               <div className="w-8 h-8 bg-gradient-to-br from-nexa-primary to-nexa-secondary rounded-lg flex items-center justify-center">
                 <span className="text-white text-lg font-extrabold font-sans">N</span>
               </div>
-              <span className="text-xl font-bold text-white">NEXA</span>
+              <span className="text-xl font-bold text-white">Nexa Solutions</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-8">
@@ -298,7 +298,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAboutUsClick, flow = 'landing'
                 <div className="w-8 h-8 bg-gradient-to-br from-nexa-primary to-nexa-secondary rounded-lg flex items-center justify-center">
                   <span className="text-white text-lg font-extrabold font-sans">N</span>
                 </div>
-                <span className="text-xl font-bold text-white">NEXA</span>
+                <span className="text-xl font-bold text-white">Nexa Solutions</span>
               </Link>
               <div
                 className="flex items-center gap-1 font-mono text-sm font-bold tracking-widest select-none"

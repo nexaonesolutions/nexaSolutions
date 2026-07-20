@@ -107,7 +107,7 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
               <div className="w-8 h-8 bg-gradient-to-br from-nexa-primary to-nexa-secondary rounded-lg flex items-center justify-center">
                 <span className="text-white text-lg font-extrabold font-sans">N</span>
               </div>
-              <span className="text-xl font-bold text-white">NEXA</span>
+              <span className="text-xl font-bold text-white">Nexa Solutions</span>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">
               {t('footer.desc')}

@@ -78,6 +78,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
   try {
     if (existingSnap && existingSnap.exists) {
+      const existingData = existingSnap.data() as Order;
       const wasPending = existingData.status !== 'succeeded';
       
       const updatedOrder = {

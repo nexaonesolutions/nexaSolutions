@@ -23,6 +23,7 @@ import NotFoundPage from '@/src/Pages/components/NotFoundPage';
 import SuccessPage from '@/src/Pages/components/SuccessPage';
 import ChatWidget from '@/src/Pages/components/ChatWidget';
 import TermsOfUse from '@/src/Pages/components/Legal/TermsOfUse';
+import PrivacyPolicy from '@/src/Pages/components/Legal/PrivacyPolicy';
 import CookieBanner from '@/src/Pages/components/CookieBanner';
 
 
@@ -123,6 +124,7 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           } />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

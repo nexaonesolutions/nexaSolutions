@@ -146,8 +146,8 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
             © {new Date().getFullYear()} NEXA Digital. {t('footer.rights')}
           </p>
           <div className="flex gap-6 text-sm text-gray-600">
-            <a href="#" className="hover:text-white transition-colors">{t('footer.links.terms')}</a>
-            <a href="#" className="hover:text-white transition-colors">{t('footer.links.privacy')}</a>
+            <Link to="/termos-de-uso" className="hover:text-white transition-colors">{t('footer.links.terms')}</Link>
+            <Link to="/politica-de-privacidade" className="hover:text-white transition-colors">{t('footer.links.privacy')}</Link>
           </div>
         </div>
       </div>

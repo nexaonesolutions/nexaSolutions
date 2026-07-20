@@ -33,6 +33,7 @@ const ChatWidget: React.FC = () => {
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [unreadCount, setUnreadCount] = useState(0);
     const [meta, setMeta] = useState<ChatMeta | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,24 +41,14 @@ const ChatWidget: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Dynamic viewport height for mobile keyboards
-    useEffect(() => {
-        const updateHeight = () => {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        };
-        updateHeight();
-        window.addEventListener('resize', updateHeight);
-        window.addEventListener('orientationchange', updateHeight);
-        return () => {
-            window.removeEventListener('resize', updateHeight);
-            window.removeEventListener('orientationchange', updateHeight);
-        };
-    }, []);
+  // Dynamic viewport height was here, replaced by dvh classes below
 
     // Initial load: Fetch orders from API to know which chats to listen to
     useEffect(() => {
-        if (!user || !token) return;
+        if (!user || !token) {
+            setIsLoading(false);
+            return;
+        }
 
         const fetchOrders = async () => {
             try {
@@ -78,6 +69,8 @@ const ChatWidget: React.FC = () => {
                 } else {
                     console.error("Error fetching orders for chat:", err);
                 }
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -199,15 +192,7 @@ const ChatWidget: React.FC = () => {
         }
     }, [isOpen, messages, selectedOrderId]);
 
-    // Paralyze background scrolling when open
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            return () => {
-                document.body.style.overflow = '';
-            };
-        }
-    }, [isOpen]);
+    // (Scroll locking removed to prevent the background from freezing)
 
     const handleSend = async () => {
         if (!newMessage.trim() || !selectedOrderId || sending || !user) return;
@@ -251,8 +236,11 @@ const ChatWidget: React.FC = () => {
         }
     };
 
-    // If not authenticated, hide widget completely
-    if (!user) return null;
+    // If not authenticated or still loading, hide widget completely
+    if (!user || isLoading) return null;
+    
+    // Hide completely if user has no active projects
+    if (activeOrderIds.length === 0) return null;
 
     const filteredMessages = selectedOrderId
         ? messages.filter(m => m.orderId === selectedOrderId)
@@ -274,8 +262,7 @@ const ChatWidget: React.FC = () => {
             {/* Chat Panel */}
             {isOpen && (
                 <div
-                    className="fixed bottom-0 sm:bottom-20 right-0 sm:right-4 z-[999] w-full sm:w-[400px] h-full sm:h-[600px] flex flex-col sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border-0 sm:border sm:border-white/10 bg-[#0b141a] font-sans"
-                    style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
+                    className="fixed bottom-0 sm:bottom-24 right-0 sm:right-6 z-[999] w-full sm:w-[400px] h-[100dvh] sm:h-[600px] sm:max-h-[calc(100vh-120px)] flex flex-col sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border-0 sm:border sm:border-white/10 bg-[#0b141a] font-sans"
                 >
                     {/* Premium Chat Background Pattern */}
                     <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
@@ -332,22 +319,7 @@ const ChatWidget: React.FC = () => {
 
                     {/* Messages */}
                     <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar relative z-10">
-                        {activeOrderIds.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                                <div className="p-5 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-                                    <MessageCircle size={36} strokeWidth={1.5} />
-                                </div>
-                                <p className="text-white font-bold text-lg tracking-wide mb-2">Você ainda não possui projetos</p>
-                                <p className="text-sm text-gray-400 leading-relaxed mb-6">A Central de Projetos é exclusiva para acompanhamento de desenvolvimento. Adquira um plano para começar.</p>
-                                <a
-                                    href="#/planos"
-                                    onClick={() => setIsOpen(false)}
-                                    className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-105 transition-all text-sm"
-                                >
-                                    Ver Nossos Planos
-                                </a>
-                            </div>
-                        ) : filteredMessages.length === 0 ? (
+                        {filteredMessages.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center px-6">
                                 <div className="p-5 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                                     <MessageCircle size={36} strokeWidth={1.5} />

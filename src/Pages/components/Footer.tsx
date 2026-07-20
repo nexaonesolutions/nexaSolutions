@@ -1,6 +1,6 @@
 
 import React, { useCallback } from 'react';
-import { Instagram, Linkedin, Twitter, Github, Facebook } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion } from 'framer-motion';
@@ -134,20 +134,8 @@ export const Footer: React.FC<FooterProps> = ({ onAboutUsClick }) => {
           <motion.div variants={footerStyle} className="text-center md:text-left">
             <h4 className="text-white font-bold mb-6">{t('footer.social')}</h4>
             <div className="flex gap-4 justify-start">
-              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
+              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://www.instagram.com/nexa.dg/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
                 <Instagram className="w-5 h-5" />
-              </motion.a>
-              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
-                <Linkedin className="w-5 h-5" />
-              </motion.a>
-              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
-                <Twitter className="w-5 h-5" />
-              </motion.a>
-              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
-                <Github className="w-5 h-5" />
-              </motion.a>
-              <motion.a whileHover="hover" whileTap="tap" variants={footerTheme} href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:bg-nexa-primary hover:text-black transition-all">
-                <Facebook className="w-5 h-5" />
               </motion.a>
             </div>
           </motion.div>

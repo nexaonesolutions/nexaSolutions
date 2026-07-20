@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { adminDb } from '../services/firebase-admin.service';
+import { sendEmail } from '../services/email.service';
 
 interface Order {
   id: string;
@@ -77,7 +78,8 @@ export const createOrder = async (req: Request, res: Response) => {
 
   try {
     if (existingSnap && existingSnap.exists) {
-      const existingData = existingSnap.data() as Order;
+      const wasPending = existingData.status !== 'succeeded';
+      
       const updatedOrder = {
         ...existingData,
         total: Number(total),
@@ -96,6 +98,35 @@ export const createOrder = async (req: Request, res: Response) => {
 
       await orderRef!.update(updatedOrder);
       console.log('Order updated from pending:', existingSnap.id);
+      
+      if (wasPending) {
+        // Envia notificação de novo pedido
+        try {
+          await sendEmail({
+            to: 'nexa2114@gmail.com',
+            subject: '🎉 Novo Pedido Aprovado - Nexa Solutions',
+            body: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                <h2 style="color: #00bcd4;">Novo Projeto Confirmado!</h2>
+                <p>Um cliente acabou de concluir o pagamento e iniciar um novo projeto.</p>
+                <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 10px;"><strong>ID do Pedido:</strong> ${existingSnap.id}</li>
+                    <li style="margin-bottom: 10px;"><strong>Cliente:</strong> ${updatedOrder.clientName || 'Não informado'} (${updatedOrder.clientEmail || 'Não informado'})</li>
+                    <li style="margin-bottom: 10px;"><strong>Plano Principal:</strong> ${updatedOrder.mainPlanName}</li>
+                    <li style="margin-bottom: 10px;"><strong>Manutenção:</strong> ${updatedOrder.maintenancePlanName || 'Não contratado'}</li>
+                    <li style="margin-bottom: 10px;"><strong>Total:</strong> ${(updatedOrder.currency || 'brl').toUpperCase()} ${updatedOrder.total}</li>
+                  </ul>
+                </div>
+                <p>Acesse o painel de administrador para ver os detalhes e iniciar o atendimento no chat.</p>
+              </div>
+            `
+          });
+        } catch (e) {
+          console.error('Failed to send order notification email:', e);
+        }
+      }
+      
       return res.status(200).send(updatedOrder);
     }
 
@@ -117,6 +148,33 @@ export const createOrder = async (req: Request, res: Response) => {
 
     await adminDb.collection('orders').doc(newOrder.id).set(newOrder);
     console.log('Order created:', newOrder.id);
+    
+    // Envia notificação de novo pedido
+    try {
+      await sendEmail({
+        to: 'nexa2114@gmail.com',
+        subject: '🎉 Novo Pedido Aprovado - Nexa Solutions',
+        body: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <h2 style="color: #00bcd4;">Novo Projeto Confirmado!</h2>
+            <p>Um cliente acabou de concluir o pagamento e iniciar um novo projeto.</p>
+            <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 10px;"><strong>ID do Pedido:</strong> ${newOrder.id}</li>
+                <li style="margin-bottom: 10px;"><strong>Cliente:</strong> ${newOrder.clientName || 'Não informado'} (${newOrder.clientEmail || 'Não informado'})</li>
+                <li style="margin-bottom: 10px;"><strong>Plano Principal:</strong> ${newOrder.mainPlanName}</li>
+                <li style="margin-bottom: 10px;"><strong>Manutenção:</strong> ${newOrder.maintenancePlanName || 'Não contratado'}</li>
+                <li style="margin-bottom: 10px;"><strong>Total:</strong> ${(newOrder.currency || 'brl').toUpperCase()} ${newOrder.total}</li>
+              </ul>
+            </div>
+            <p>Acesse o painel de administrador para ver os detalhes e iniciar o atendimento no chat.</p>
+          </div>
+        `
+      });
+    } catch (e) {
+      console.error('Failed to send order notification email:', e);
+    }
+
     res.status(201).json({ message: 'Order created', order: newOrder });
   } catch (error: any) {
     res.status(500).json({ message: 'Error creating order', error: error.message });

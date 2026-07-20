@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {
     return (
-        <div className="bg-nexa-dark min-h-screen text-gray-300 font-sans antialiased py-12 px-4 sm:px-6 lg:px-8">
+        <div className="bg-nexa-dark min-h-screen text-gray-300 font-sans antialiased pt-32 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <Link to="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 mb-8 transition-colors">
                     <ArrowLeft className="w-4 h-4 mr-2" />

@@ -25,14 +25,24 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     build: {
+      chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'framer': ['framer-motion'],
-            'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-            'stripe': ['@stripe/stripe-js', '@stripe/react-stripe-js'],
-          }
+          // Function-based manualChunks: splits every node_module into its own named chunk
+          // This prevents ANY vendor library from bloating the main index bundle
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('firebase')) return 'firebase';
+              if (id.includes('framer-motion')) return 'framer';
+              if (id.includes('@stripe')) return 'stripe';
+              if (id.includes('lucide-react')) return 'lucide';
+              if (id.includes('date-fns')) return 'date-fns';
+              if (id.includes('react-dom') || id.includes('react-router')) return 'react-vendor';
+              if (id.includes('react')) return 'react-vendor';
+              // All other node_modules go into a shared vendor chunk
+              return 'vendor';
+            }
+          },
         }
       }
     },

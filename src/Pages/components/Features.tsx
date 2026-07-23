@@ -1,10 +1,28 @@
 
 import React from 'react';
-import * as LucideIcons from 'lucide-react';
+import {
+  Paintbrush,
+  Rocket,
+  Smartphone,
+  TrendingUp,
+  ShieldCheck,
+  BarChart,
+  HelpCircle,
+} from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
+// Explicit icon map — NEVER use "import * as LucideIcons" as it bundles all 1000+ icons
+const ICON_MAP: Record<string, React.ElementType> = {
+  Paintbrush,
+  Rocket,
+  Smartphone,
+  TrendingUp,
+  ShieldCheck,
+  BarChart,
+};
+
 interface FeatureItem {
-  icon: keyof typeof LucideIcons;
+  icon: string;
   title: string;
   description: string;
 }
@@ -29,8 +47,7 @@ export const Features: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.isArray(featuresList) && featuresList.map((feature, index) => {
-             // Melhoria: Carrega o ícone dinamicamente com base no nome fornecido na tradução.
-             const Icon = LucideIcons[feature.icon] as React.ElementType || LucideIcons.HelpCircle;
+             const Icon = ICON_MAP[feature.icon] ?? HelpCircle;
              return (
               <div 
                 key={index} 

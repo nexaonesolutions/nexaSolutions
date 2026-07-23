@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     build: {
+      target: ['es2015', 'chrome70', 'safari12'],
       chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {

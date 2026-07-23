@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuthSafe } from '../contexts/AuthContext';
@@ -6,6 +6,9 @@ import { LanguageSelector } from './LanguageSelector';
 import { Menu, LogIn, LogOut, Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Only run infinite animations on desktop (non-touch) to avoid mobile GPU overhead
+const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
 interface NavbarProps {
   onAboutUsClick: () => void;
@@ -24,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAboutUsClick, flow = 'landing'
   const location = useLocation();
 
   const letterAnimation = {
-    rest: (delay: number) => ({
+    rest: (delay: number) => isTouch ? {} : ({
       y: [0, 0, -10, 0, 0],
       scaleY: [1, 0.8, 1.1, 0.8, 1],
       scaleX: [1, 1.2, 0.9, 1.2, 1],
@@ -41,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAboutUsClick, flow = 'landing'
   };
 
   const dustAnimation = {
-    rest: (custom: { delay: number; x: number; y: number }) => ({
+    rest: (custom: { delay: number; x: number; y: number }) => isTouch ? {} : ({
       y: [0, custom.y],
       x: ['-50%', `${custom.x}px`],
       opacity: [0, 0, 1, 0],

@@ -7,6 +7,11 @@ interface ParallaxOptions {
   offsetY?: [number, number];
 }
 
+// Detect touch devices — parallax is mousemove-only and wastes GPU on mobile
+const isTouchDevice = () =>
+  typeof window !== 'undefined' &&
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 export const useParallax = (
   ref: RefObject<HTMLElement>,
   options?: ParallaxOptions
@@ -20,16 +25,13 @@ export const useParallax = (
 
   useEffect(() => {
     const element = ref.current;
-    if (!element || prefersReducedMotion) return;
+    // Skip entirely on touch devices and when reduced motion is preferred
+    if (!element || prefersReducedMotion || isTouchDevice()) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = element.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      const xPct = mouseX / width - 0.5;
-      const yPct = mouseY / height - 0.5;
+      const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+      const yPct = (e.clientY - rect.top) / rect.height - 0.5;
       x.set(xPct);
       y.set(yPct);
     };
@@ -39,7 +41,7 @@ export const useParallax = (
       y.set(0);
     };
 
-    element.addEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mousemove', handleMouseMove, { passive: true });
     element.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {

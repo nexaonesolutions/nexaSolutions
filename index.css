@@ -88,3 +88,34 @@ h1 {
 .backface-hidden {
   backface-visibility: hidden;
 }
+
+/* ============================================================
+   MOBILE PERFORMANCE — disable expensive animations on touch
+   ============================================================ */
+@media (max-width: 767px) {
+  /* Disable glitch-text animation on mobile — it causes heavy repaints */
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none !important;
+    animation: none !important;
+  }
+
+  /* Disable gradient animation on mobile */
+  .animate-gradient-x {
+    animation: none !important;
+    background: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+
+  /* Promote animated blobs to GPU layer to avoid repaints */
+  .animate-pulse-slow {
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+
+  /* Disable backdrop-blur on mobile menus if it causes freezing */
+  .backdrop-blur-lg {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgba(15, 23, 42, 0.97);
+  }
+}

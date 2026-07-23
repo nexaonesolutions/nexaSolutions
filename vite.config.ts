@@ -24,6 +24,18 @@ export default defineConfig(({ mode }) => {
         brotliSize: true,
       }),
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'framer': ['framer-motion'],
+            'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            'stripe': ['@stripe/stripe-js', '@stripe/react-stripe-js'],
+          }
+        }
+      }
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

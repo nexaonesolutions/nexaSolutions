@@ -33,9 +33,6 @@ window.addEventListener('unhandledrejection', (event) => {
       return;
     }
 
-    // Ocultar a estrutura de erros real no console
-    event.preventDefault();
-
     // Detect Nexa Backend connection failures
     if (msg.includes('Failed to fetch')) {
       console.warn('[NEXA] Conexão com o servidor principal temporariamente indisponível.');
@@ -56,7 +53,6 @@ window.addEventListener('error', (event) => {
       return;
     }
 
-    event.preventDefault();
     // eslint-disable-next-line no-console
     console.warn('[NEXA] Encontramos uma pequena instabilidade visual na interface. Carregando recursos de fallback.');
   } catch (e) { }

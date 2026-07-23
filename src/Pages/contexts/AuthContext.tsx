@@ -122,30 +122,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (firebaseUser) {
         setIsLoading(true); // Still show loading while fetching doc
         setIsProfileLoaded(false);
-        const isNexaAdmin = firebaseUser.email === 'nexa2114@gmail.com';
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        try {
+          const isNexaAdmin = firebaseUser.email === 'nexa2114@gmail.com';
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            name: userData.name || '',
-            role: isNexaAdmin ? 'admin' : (userData.role || 'client'),
-            cpf: userData.cpf,
-            phone: userData.phone
-          });
-        } else {
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            name: '',
-            role: isNexaAdmin ? 'admin' : 'client'
-          });
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUser({
+              id: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              name: userData.name || '',
+              role: isNexaAdmin ? 'admin' : (userData.role || 'client'),
+              cpf: userData.cpf,
+              phone: userData.phone
+            });
+          } else {
+            setUser({
+              id: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              name: '',
+              role: isNexaAdmin ? 'admin' : 'client'
+            });
+          }
+          const userToken = await firebaseUser.getIdToken();
+          setToken(userToken);
+        } catch (err) {
+          console.error("[NEXA] Falha ao carregar perfil de usuário do Firebase:", err);
+          setUser(null);
+          setToken(null);
+        } finally {
+          setIsProfileLoaded(true);
         }
-        const userToken = await firebaseUser.getIdToken();
-        setToken(userToken);
-        setIsProfileLoaded(true);
       } else {
         setUser(null);
         setToken(null);
@@ -163,6 +170,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchOrders = useCallback(async () => {
     if (!token) return;
+    if (!navigator.onLine) {
+      console.warn("[NEXA] Navegador offline. fetchOrders ignorado.");
+      return;
+    }
     try {
       const userOrders = await apiCall('/api/orders', {
         headers: {
@@ -278,7 +289,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       // Configura a persistência antes do login baseando-se no checkbox
-      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+      try {
+        await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+      } catch (persistenceError) {
+        console.warn("[NEXA] Falha ao definir persistência principal. Tentando fallback para sessão.", persistenceError);
+        try {
+          await setPersistence(auth, browserSessionPersistence);
+        } catch (fallbackError) {
+          console.warn("[NEXA] Falha no fallback de persistência.", fallbackError);
+        }
+      }
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
